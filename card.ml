@@ -1,19 +1,23 @@
 (** card in position deck, player, table
-color should be a variant*)
+color should be a variant
+joker1 =  {0 joker 104 deck}
+joker2 = {0 joker 105 deck}*)
+
+
+type color_type = Black | Blue | Orange | Red | Joker
+type position_type = Deck | Player | Table
 
 
 type card = {
   number : int;
-  color : string;
+  color : color_type;
   index : int;
-  position: string; 
-}
-
-type joker = {
-index : int;
+  position: position_type; 
 }
 
 
+(** create_card max_number number_in color_in index_in card_list outputs a list 
+of cards with 1 to max_number 4 colors black blue orange red and index from 0 to  *)
 let rec create_card (max_number: int )(number_in: int)(color_in : string) (index_in : int) (card_list : card list)  = 
   let new_card = {number =  number_in; color = color_in; index = index_in; position = "deck" } in
   let new_card_list = card_list @ [new_card] in
@@ -29,6 +33,3 @@ let rec create_card (max_number: int )(number_in: int)(color_in : string) (index
   | i -> create_card max_number (number_in +1) color_in (index_in+1) new_card_list
 
 let card_list = create_card 13 1 "black" 0 []
-
-type color = Black | Blue | Orange | Red
-type position = Deck | Player | Table
