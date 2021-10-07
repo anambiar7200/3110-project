@@ -1,23 +1,43 @@
-(* type color_type = Black | Blue | Orange | Red | Joker type
-   position_type = Deck | Player | Table
+open Card
 
-   type card = { number : int; color : color_type; index : int;
-   position: position_type; }
+type deck = card list
 
-   module Dealing = struct type deck = card list let remaining_deck =
+exception OutOfCards
 
-   (** [shuffle deck] is the shuffled deck. Requires: [deck] is a valid
-   deck. *) let shuffle (deck:deck) =
+let bound = 1000
 
-   (** [ideal_to_player player] is the list of 14 cards drawn to player
-   [player]. Requires: [player] is a valid player. *) let deal_to_player
-   player =
+let cards_per_person = 14
 
-   (** [draw player] is the card drawn to player [player]. Requires:
-   [player] is a valid player. *) let draw player =
+let random_seed = Sys.time () |> int_of_float |> Random.init
 
-   (** [allow_to_draw deck] is true or false. It represents whether or
-   not there's eough cards i the deck to draw. Requires: [deck] is a
-   valid deck. *) let allow_to_draw deck =
+let make_tuple card = (Random.int bound, card)
 
-   end *)
+let tuple_compare a b =
+  if fst a = fst b then 0 else if fst a > fst b then 1 else -1
+
+let de_tuple tuple = snd tuple
+
+let shuffle deck =
+  random_seed;
+  deck |> List.map make_tuple |> List.sort tuple_compare
+  |> List.map de_tuple
+
+let remaining_deck = ref (shuffle card_list)
+
+let rec deal_helper acc needed =
+  if needed = 0 then acc
+  else
+    match !remaining_deck with
+    | [] -> raise OutOfCards
+    | h :: t ->
+        remaining_deck := t;
+        deal_helper (h :: acc) (needed - 1)
+
+let deal = deal_helper [] cards_per_person
+
+let draw =
+  match !remaining_deck with
+  | [] -> raise OutOfCards
+  | h :: t ->
+      remaining_deck := t;
+      h
