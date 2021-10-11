@@ -1,6 +1,3 @@
-(** card in position deck, player, table color should be a variant
-    joker1 = {0 joker 104 deck} joker2 = {0 joker 105 deck}*)
-
 type color_type =
   | Black
   | Blue
@@ -17,7 +14,6 @@ type card = {
   number : int;
   color : color_type;
   index : int;
-  position : position_type;
 }
 
 (** create_card max_number number_in color_in index_in card_list outputs
@@ -30,12 +26,7 @@ let rec create_card
     (index_in : int)
     (card_list : card list) =
   let new_card =
-    {
-      number = number_in;
-      color = color_in;
-      index = index_in;
-      position = Deck;
-    }
+    { number = number_in; color = color_in; index = index_in }
   in
   let new_card_list = card_list @ [ new_card ] in
   match List.length new_card_list with
