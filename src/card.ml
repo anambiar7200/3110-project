@@ -50,4 +50,4 @@ let rec create_card
       create_card max_number (number_in + 1) color_in (index_in + 1)
         new_card_list
 
-let card_list = create_card 13 1 Black 0 []
+let card_deck = create_card 13 1 Black 0 []
