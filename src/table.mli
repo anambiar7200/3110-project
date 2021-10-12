@@ -13,9 +13,7 @@ exception NoSuchCard
 
 val check_valid : table -> bool
 
-type set_type = 
-  | Run
-  | Group
+type set_type
 
 type card 
 (** The abstract type of values representing a card*)
