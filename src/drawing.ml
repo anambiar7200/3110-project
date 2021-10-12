@@ -22,7 +22,7 @@ let shuffle deck =
   deck |> List.map make_tuple |> List.sort tuple_compare
   |> List.map de_tuple
 
-let remaining_deck = ref (shuffle Card.card_deck)
+let remaining_deck = ref (shuffle card_deck)
 
 let rec deal_helper acc needed =
   if needed = 0 then acc
