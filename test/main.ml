@@ -1,6 +1,9 @@
 open OUnit2
 open Game
 open Game.Card
+open Game.Player
+open Game.Drawing
+open Game.Table
 
 let card0 = List.nth card_deck 0
 
