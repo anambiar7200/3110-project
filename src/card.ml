@@ -12,16 +12,18 @@ type position_type =
 
 type card = {
   number : int;
-  (*number on the card*)
   color : color_type;
-  index : int; (*index of the card of that color*)
+  index : int;
 }
 
-(** create_card max_number number_in color_in index_in card_list outputs
-    a list of cards with 1 to max_number 4 colors black blue orange red
-    and index from 0 to *)
+let get_number c = c.number
+
+let get_color c = c.color
+
+let get_index c = c.index
+
 let rec create_card
-    (max_number : int) (* 1 - 13, A to K*)
+    (max_number : int)
     (number_in : int)
     (color_in : color_type)
     (index_in : int)
