@@ -50,8 +50,4 @@ let rec create_card
       create_card max_number (number_in + 1) color_in (index_in + 1)
         new_card_list
 
-<<<<<<< HEAD
 let card_deck = create_card 13 1 Black 0 []
-=======
-let card_list = create_card 13 1 Black 0 []
->>>>>>> 2e77a9266fbb6c42a8650fddbc625690f0f25534
