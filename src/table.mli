@@ -10,11 +10,6 @@ exception InvalidCombo
 
 exception NoSuchCard
 
-val valid_table : table -> bool
-(* [valid_table tb] returns true if tb is a valid table. A table is
-   valid if all the sets within it are valid sets. An empty table is
-   defined as valid.*)
-
 type set_type =
   | Run
   | Group
@@ -36,3 +31,8 @@ val create_set : set_type -> card list -> set
 val create_table : set list -> table
 (* [create_table lst] creates a table made up of the sets in lst. [lst]
    is a set list. *)
+
+val valid_table : table -> bool
+(* [valid_table tb] returns true if tb is a valid table. A table is
+   valid if all the sets within it are valid sets. An empty table is
+   defined as valid.*)
