@@ -15,6 +15,8 @@ exception InvalidCombo
 
 exception NoSuchCard
 
+let create_set kind cards = { kind; cards }
+
 let rec valid_group cards =
   match cards with
   | [] -> false
