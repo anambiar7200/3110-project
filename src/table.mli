@@ -10,7 +10,7 @@ exception InvalidCombo
 
 exception NoSuchCard
 
-(*val check_valid : table -> bool *)
+val check_valid : table -> bool
 
 type set_type =
   | Run

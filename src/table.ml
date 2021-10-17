@@ -52,3 +52,6 @@ let rec valid_run set =
         else false
 
 let valid_set set = valid_run set || valid_group set.cards
+
+let valid_table table =
+  List.fold_left (fun acc x -> acc && valid_set x) true table
