@@ -17,6 +17,8 @@ exception NoSuchCard
 
 let create_set kind cards = { kind; cards }
 
+let create_table sets = sets
+
 let rec valid_group cards =
   match cards with
   | [] -> false
@@ -54,4 +56,7 @@ let rec valid_run set =
 let valid_set set = valid_run set || valid_group set.cards
 
 let valid_table table =
-  List.fold_left (fun acc x -> acc && valid_set x) true table
+  match table with
+  | [] -> true
+  | _ :: _ ->
+      List.fold_left (fun acc x -> acc && valid_set x) true table
