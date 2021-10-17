@@ -13,6 +13,11 @@ let is_empty (play : player) = if play = [] then true else false
 
 let build_player (clst : Card.card list) : player = clst
 
+let peek_player (p : player) =
+  match p with
+  | [] -> raise OutOfCards
+  | h :: t -> h
+
 let rec play_card (c : Card.card) (p_h : player) : player =
   match p_h with
   | h :: t -> if h = c then t else h :: play_card c t
@@ -44,7 +49,7 @@ let card_back (c : Card.card) (play : player) (before : player) : player
 let rec take_from_table
     (c : Card.card)
     (table : Card.card list)
-    (before : player) : player =
+    (before : player) =
   match List.mem c before with
   | false -> raise NotYourCard
   | true -> (
