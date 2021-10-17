@@ -9,3 +9,5 @@ val deal : Card.card list
 
 val draw : Card.card
 (** [draw] is the card drawn. *)
+
+val remaining_deck : Card.card list ref
