@@ -20,10 +20,6 @@ type set_type =
 type set
 (** The abstract type representing a set*)
 
-val valid_set : set -> bool
-(** [valid_set s] return true if s is a valid run or group and false
-    otherwise. [s] is of type set. *)
-
 val create_set : set_type -> card list -> set
 (** [create_set k cs] creates a set with kind k and cards cs. [k] is of
     type set_type and [cs] is a card list.*)
@@ -31,6 +27,10 @@ val create_set : set_type -> card list -> set
 val create_table : set list -> table
 (* [create_table lst] creates a table made up of the sets in lst. [lst]
    is a set list. *)
+
+val valid_set : set -> bool
+(** [valid_set s] return true if s is a valid run or group and false
+    otherwise. [s] is of type set. *)
 
 val valid_table : table -> bool
 (* [valid_table tb] returns true if tb is a valid table. A table is
