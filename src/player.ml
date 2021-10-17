@@ -28,6 +28,7 @@ let rec insert_to_table
     (table : Card.card list)
     (ind : int)
     (current : int) =
+  (*current start with 0*)
   match table with
   | [] -> [ c ]
   | h :: t ->
