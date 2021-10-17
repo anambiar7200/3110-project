@@ -16,7 +16,16 @@ val build_player : Card.card list -> player
 val play_card : Card.card -> player -> player
 (**[play_card] is the player's hand after playing a card*)
 
-val card_back : Card.card -> player -> player
+val insert_to_table :
+  Card.card -> Card.card list -> int -> int -> Card.card list
+(**[insert_to_table] is a list in the table after the player attempts to
+   player a card*)
+
+val take_from_table : Card.card -> Card.card list -> player -> player
+(**[tale_from_table] is a new combo in the table after the player takes
+   back a card they played*)
+
+val card_back : Card.card -> player -> player -> player
 (**[card_back] is the player's hand after the player takes a card back
    from the table*)
 
