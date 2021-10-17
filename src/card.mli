@@ -19,9 +19,8 @@ type card
 val get_number : card -> int
 (** [get_number c] is the number of a card c. *)
 
-<<<<<<< HEAD
 val card_deck : card list
-=======
+
 val get_color : card -> color_type
 (** [get_color c] is the color of a card c. *)
 
@@ -30,4 +29,3 @@ val get_index : card -> int
 
 val card_deck : card list
 (** card_deck is a list of 104 rummikub cards. *)
->>>>>>> main
