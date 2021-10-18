@@ -10,11 +10,41 @@ open Game.Table
 (*Black 1*)
 let card0 = List.nth card_deck 0
 
+(*Black 3*)
+let card2 = List.nth card_deck 2
+
+(*Black 4*)
+let card3 = List.nth card_deck 3
+
 (*Red 13*)
 let card103 = List.nth card_deck 103
 
 (*Blue 5*)
 let card30 = List.nth card_deck 30
+
+(*Black 7*)
+let card19 = List.nth card_deck 19
+
+(*Blue 7 (2)*)
+let card45 = List.nth card_deck 45
+
+(*Red 7*)
+let card84 = List.nth card_deck 84
+
+(*Orange 7*)
+let card58 = List.nth card_deck 58
+
+(*Blue 2*)
+let card27 = List.nth card_deck 27
+
+(*Orange 3*)
+let card54 = List.nth card_deck 54
+
+(*Blue 7 (1)*)
+let card32 = List.nth card_deck 32
+
+(*Blue 10*)
+let card35 = List.nth card_deck 35
 
 (*Black 2*)
 let card1 = List.nth card_deck 1
@@ -52,36 +82,33 @@ let card85 = List.nth card_deck 85
 (*Black 13*)
 let card12 = List.nth card_deck 12
 
-(**--------------------test cases for module cards----------------------*)
+(**----------------- sets and tables for testing----------------*)
+let black_1_4 = create_set Run [ card0; card1; card2; card3 ]
 
-let get_number_test (name : string) (c : card) (expected_output : int) :
-    test =
-  name >:: fun _ -> assert_equal expected_output (get_number c)
+(*let black_4_1 = create_set Run [ card3; card2; card1; card0 ] *)
 
-let get_color_test
-    (name : string)
-    (c : card)
-    (expected_output : color_type) : test =
-  name >:: fun _ -> assert_equal expected_output (get_color c)
+let set_empty = create_set Run []
 
-let get_index_test (name : string) (c : card) (expected_output : int) :
-    test =
-  name >:: fun _ -> assert_equal expected_output (get_index c)
+let sevens3 = create_set Group [ card58; card32; card84 ]
 
-let card_tests =
-  [
-    get_number_test "card0 number is 1" card0 1;
-    get_number_test "card103 number is 13" card103 13;
-    get_number_test "card30 number is 5" card30 5;
-    get_color_test "card0 color is Black" card0 Black;
-    get_color_test "card103 color is Red" card103 Red;
-    get_color_test "card30 color is Blue" card30 Blue;
-    get_index_test "card0 index is 0" card0 0;
-    get_index_test "card103 index is 103" card103 103;
-    get_index_test "card30 index is 30" card30 30;
-  ]
+let sevens4 = create_set Group [ card19; card32; card58; card84 ]
 
-(**------------------test cases for module player----------------------*)
+let sevens_same = create_set Group [ card19; card32; card45 ]
+
+let black1_blue2_orange3 = create_set Run [ card0; card27; card54 ]
+
+let non_consec_blues = create_set Run [ card27; card45; card35 ]
+
+let invalid_table_ii = create_table [ non_consec_blues; sevens_same ]
+
+let invalid_table_iv = create_table [ non_consec_blues; sevens4 ]
+
+let valid_table = create_table [ black_1_4; sevens3 ]
+
+let empty_table = create_table []
+
+(* ------------ player hands and moves for module player
+   ------------- *)
 let p1 =
   [ card0; card100; card103; card99; card12; card36; card32; card85 ]
 
@@ -139,8 +166,6 @@ let play3 = build_player p13 (*card 0*)
 let play4 = build_player p14
 (*card 100*)
 
-(* let play5 = play_card card70 player1 *)
-
 (**Players' Hand after taking a card back
 
    - If player tries to take back a card did not belong to them, raise
@@ -148,10 +173,6 @@ let play4 = build_player p14
 let pl_bk1 = play1
 
 let pl_bk11 = build_player p1_b
-
-(* let pl_bk2 = card_back card70 play2
-
-   let pl_bk3 = card_back card100 player2 *)
 
 (*Players' Hand after drawing a card from the deck - If the deck is
   empty, raise exception OutOfCards*)
@@ -179,11 +200,37 @@ let pl_tb2 = p31
 let take1 = p22
 (*take_from_table card30 p2 player3*)
 
-(*card not from the table*)
-(* let take2 = take_from_table card12 p2 player1 *)
+(**------------test functions for module cards-------------*)
 
-(*card not belong to original set*)
-(* let take3 = take_from_table card70 p2 player3 *)
+let get_number_test (name : string) (c : card) (expected_output : int) :
+    test =
+  name >:: fun _ -> assert_equal expected_output (get_number c)
+
+let get_color_test
+    (name : string)
+    (c : card)
+    (expected_output : color_type) : test =
+  name >:: fun _ -> assert_equal expected_output (get_color c)
+
+let get_index_test (name : string) (c : card) (expected_output : int) :
+    test =
+  name >:: fun _ -> assert_equal expected_output (get_index c)
+
+(**-------------test functions for module table-------------------*)
+let valid_set_test
+    (name : string)
+    (cards : set)
+    (expected_output : bool) : test =
+  name >:: fun _ -> assert_equal expected_output (valid_set cards)
+
+let valid_table_test
+    (name : string)
+    (t : table)
+    (expected_output : bool) : test =
+  name >:: fun _ ->
+  assert_equal expected_output (Game.Table.valid_table t)
+
+(**-------test functions for module player---------*)
 
 let build_peek_player_test
     (name : string)
@@ -226,6 +273,66 @@ let take_from_table_test
   name >:: fun _ ->
   assert_equal expected_output (take_from_table c tb bf)
 
+let play_card_exception_test (name : string) (c : card) (p : player) :
+    test =
+  name >:: fun _ ->
+  assert_raises Game.Player.OutOfCards (fun () -> play_card c p)
+
+let card_back_exception_test
+    (name : string)
+    (c : card)
+    (p : player)
+    (bf : player) : test =
+  name >:: fun _ ->
+  assert_raises Game.Player.NotYourCard (fun () -> card_back c p bf)
+
+let take_from_table_nyc_exception_test
+    (name : string)
+    (c : card)
+    (tb : Card.card list)
+    (bf : player) : test =
+  name >:: fun _ ->
+  assert_raises Game.Player.NotYourCard (fun () ->
+      take_from_table c tb bf)
+
+let take_from_table_nsc_exception_test
+    (name : string)
+    (c : card)
+    (tb : Card.card list)
+    (bf : player) : test =
+  name >:: fun _ ->
+  assert_raises Game.Table.NoSuchCard (fun () ->
+      take_from_table c tb bf)
+
+let card_tests =
+  [
+    get_number_test "card0 number is 1" card0 1;
+    get_number_test "card103 number is 13" card103 13;
+    get_number_test "card30 number is 5" card30 5;
+    get_color_test "card0 color is Black" card0 Black;
+    get_color_test "card103 color is Red" card103 Red;
+    get_color_test "card30 color is Blue" card30 Blue;
+    get_index_test "card0 index is 0" card0 0;
+    get_index_test "card103 index is 103" card103 103;
+    get_index_test "card30 index is 30" card30 30;
+  ]
+
+let table_tests =
+  [
+    valid_set_test "Empty set" set_empty false;
+    valid_set_test "Black 1-4" black_1_4 true;
+    (* valid_set_test "Black 4-1" black_4_1 true; *)
+    valid_set_test "4 sevens" sevens4 true;
+    valid_set_test "3 sevens" sevens3 true;
+    valid_set_test "diff color run" black1_blue2_orange3 false;
+    valid_set_test "rep color group" sevens_same false;
+    valid_set_test "non consec run" non_consec_blues false;
+    valid_table_test "empty table" empty_table true;
+    valid_table_test "sets: valid, invalid" invalid_table_iv false;
+    valid_table_test "sets: invalid, invalid" invalid_table_ii false;
+    valid_table_test "valid table" valid_table true;
+  ]
+
 let player_tests =
   [
     build_peek_player_test "build player 1" p1 card0;
@@ -243,9 +350,20 @@ let player_tests =
       0 pl_tb2;
     take_from_table_test "take card30 from p2 back to player3" card30 p2
       player3 take1;
+    play_card_exception_test "player1 tries to play card70" card70
+      player1;
+    card_back_exception_test "play2 tries to take card70 back" card70
+      play2 player1;
+    card_back_exception_test "player2 tries to take card100 back"
+      card100 player2 player2;
+    take_from_table_nsc_exception_test
+      "player1 tires to take card12 from p2" card12 p2 player1;
+    take_from_table_nyc_exception_test
+      "player3 tires to take card70 from p2" card70 p2 player3;
   ]
 
 let suite =
-  "test suite for A2" >::: List.flatten [ card_tests; player_tests ]
+  "test suite for A2"
+  >::: List.flatten [ card_tests; table_tests; player_tests ]
 
 let _ = run_test_tt_main suite
