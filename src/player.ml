@@ -59,4 +59,5 @@ let rec take_from_table
 
 (**[draw_to_player] is a player hand updated from drawing a card from
    the deck using [Drawing.draw]*)
-let draw_to_player (play : player) : player = Drawing.draw :: play
+let draw_to_player (play : player) : player =
+  fst (Drawing.draw []) :: play

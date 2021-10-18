@@ -4,11 +4,11 @@ type deck
 exception OutOfCards
 (** Raised when there are no more cards left in the deck. *)
 
-val deal : Card.card list
+val deal : Card.card list -> Card.card list * Card.card list
 (** [deal] is the cards drawn. *)
 
-val draw : Card.card
+val draw : Card.card list -> Card.card * Card.card list
 (** [draw] is the card drawn. *)
 
-val remaining_deck : Card.card list ref
-(** [remaining_deck] is the cards that are remained in the deck. *)
+val drawing_init : unit -> Card.card list
+(** [drawing_init] is the shuffled deck. *)
