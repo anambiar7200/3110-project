@@ -200,6 +200,38 @@ let pl_tb2 = p31
 let take1 = p22
 (*take_from_table card30 p2 player3*)
 
+
+(*card not from the table*)
+(* let take2 = take_from_table card12 p2 player1 *)
+(*card not belong to original set*)
+(* let take3 = take_from_table card70 p2 player3 *)
+let deck_alot =
+  [
+    card0;
+    card2;
+    card3;
+    card103;
+    card30;
+    card19;
+    card45;
+    card84;
+    card50;
+    card27;
+    card54;
+    card32;
+    card35;
+    card1;
+  ]
+
+let deck_one = [ card0 ]
+
+let cmp_set_like_lists lst1 lst2 =
+  let uniq1 = List.sort_uniq compare lst1 in
+  let uniq2 = List.sort_uniq compare lst2 in
+  List.length lst1 = List.length uniq1
+  && List.length lst2 = List.length uniq2
+  && uniq1 = uniq2
+
 (**------------test functions for module cards-------------*)
 
 let get_number_test (name : string) (c : card) (expected_output : int) :
@@ -273,6 +305,40 @@ let take_from_table_test
   name >:: fun _ ->
   assert_equal expected_output (take_from_table c tb bf)
 
+(**-------test functions for module drawing---------*)
+let right_number num = if num >= 1 && num <= 14 then true else false
+
+let deal_test (name : string) =
+  name >:: fun _ ->
+  assert_equal ~cmp:cmp_set_like_lists deck_alot
+    (fst (Drawing.deal deck_alot))
+
+let deal_return_test (name : string) =
+  name >:: fun _ ->
+  assert_equal ~cmp:cmp_set_like_lists [] (snd (Drawing.deal deck_alot))
+
+let deal_error_test (name : string) =
+  name >:: fun _ ->
+  assert_raises OutOfCards (fun () -> Drawing.deal deck_one)
+
+let draw_test (name : string) =
+  name >:: fun _ ->
+  assert_equal ~cmp:cmp_set_like_lists deck_one
+    [ fst (Drawing.draw deck_one) ]
+
+let draw_return_test (name : string) =
+  name >:: fun _ ->
+  assert_equal ~cmp:cmp_set_like_lists [] (snd (Drawing.draw deck_one))
+
+let draw_error_test (name : string) =
+  name >:: fun _ -> assert_raises OutOfCards (fun () -> Drawing.draw [])
+
+let drawing_init_test (name : string) =
+  name >:: fun _ ->
+  assert_equal ~cmp:cmp_set_like_lists Card.card_deck
+    (Drawing.drawing_init ())
+
+(**-------test suites---------*)
 let play_card_exception_test (name : string) (c : card) (p : player) :
     test =
   name >:: fun _ ->
@@ -362,8 +428,22 @@ let player_tests =
       "player3 tires to take card70 from p2" card70 p2 player3;
   ]
 
+let drawing_tests =
+  [
+    deal_test "14 cards";
+    deal_return_test "14 cards, empty remaining deck";
+    draw_test "1 card";
+    draw_return_test "1 card,  empty remaining deck";
+    deal_error_test
+      "draw 14 cards from a deck of 1, raise OutOfCards error";
+    draw_error_test
+      "draw 1 card from a empty deck, raise OutOfCards error";
+    drawing_init_test "test init and shuffle";
+  ]
+
 let suite =
   "test suite for A2"
-  >::: List.flatten [ card_tests; table_tests; player_tests ]
+  >::: List.flatten
+         [ card_tests; table_tests; player_tests; drawing_tests ]
 
 let _ = run_test_tt_main suite
