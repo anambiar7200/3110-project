@@ -166,8 +166,6 @@ let play3 = build_player p13 (*card 0*)
 let play4 = build_player p14
 (*card 100*)
 
-(* let play5 = play_card card70 player1 *)
-
 (**Players' Hand after taking a card back
 
    - If player tries to take back a card did not belong to them, raise
@@ -175,10 +173,6 @@ let play4 = build_player p14
 let pl_bk1 = play1
 
 let pl_bk11 = build_player p1_b
-
-(* let pl_bk2 = card_back card70 play2
-
-   let pl_bk3 = card_back card100 player2 *)
 
 (*Players' Hand after drawing a card from the deck - If the deck is
   empty, raise exception OutOfCards*)
@@ -205,11 +199,6 @@ let pl_tb2 = p31
 (*no error*)
 let take1 = p22
 (*take_from_table card30 p2 player3*)
-
-(*card not from the table*)
-(* let take2 = take_from_table card12 p2 player1 *)
-(*card not belong to original set*)
-(* let take3 = take_from_table card70 p2 player3 *)
 
 (**------------test functions for module cards-------------*)
 
@@ -284,6 +273,37 @@ let take_from_table_test
   name >:: fun _ ->
   assert_equal expected_output (take_from_table c tb bf)
 
+let play_card_exception_test (name : string) (c : card) (p : player) :
+    test =
+  name >:: fun _ ->
+  assert_raises Game.Player.OutOfCards (fun () -> play_card c p)
+
+let card_back_exception_test
+    (name : string)
+    (c : card)
+    (p : player)
+    (bf : player) : test =
+  name >:: fun _ ->
+  assert_raises Game.Player.NotYourCard (fun () -> card_back c p bf)
+
+let take_from_table_nyc_exception_test
+    (name : string)
+    (c : card)
+    (tb : Card.card list)
+    (bf : player) : test =
+  name >:: fun _ ->
+  assert_raises Game.Player.NotYourCard (fun () ->
+      take_from_table c tb bf)
+
+let take_from_table_nsc_exception_test
+    (name : string)
+    (c : card)
+    (tb : Card.card list)
+    (bf : player) : test =
+  name >:: fun _ ->
+  assert_raises Game.Table.NoSuchCard (fun () ->
+      take_from_table c tb bf)
+
 let card_tests =
   [
     get_number_test "card0 number is 1" card0 1;
@@ -330,6 +350,16 @@ let player_tests =
       0 pl_tb2;
     take_from_table_test "take card30 from p2 back to player3" card30 p2
       player3 take1;
+    play_card_exception_test "player1 tries to play card70" card70
+      player1;
+    card_back_exception_test "play2 tries to take card70 back" card70
+      play2 player1;
+    card_back_exception_test "player2 tries to take card100 back"
+      card100 player2 player2;
+    take_from_table_nsc_exception_test
+      "player1 tires to take card12 from p2" card12 p2 player1;
+    take_from_table_nyc_exception_test
+      "player3 tires to take card70 from p2" card70 p2 player3;
   ]
 
 let suite =
