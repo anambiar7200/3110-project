@@ -11,3 +11,4 @@ val draw : Card.card
 (** [draw] is the card drawn. *)
 
 val remaining_deck : Card.card list ref
+(** [remaining_deck] is the cards that are remained in the deck. *)

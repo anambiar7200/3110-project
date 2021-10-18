@@ -211,6 +211,13 @@ let take1 = p22
 (*card not belong to original set*)
 (* let take3 = take_from_table card70 p2 player3 *)
 
+let cmp_set_like_lists lst1 lst2 =
+  let uniq1 = List.sort_uniq compare lst1 in
+  let uniq2 = List.sort_uniq compare lst2 in
+  List.length lst1 = List.length uniq1
+  && List.length lst2 = List.length uniq2
+  && uniq1 = uniq2
+
 (**------------test functions for module cards-------------*)
 
 let get_number_test (name : string) (c : card) (expected_output : int) :
@@ -284,6 +291,20 @@ let take_from_table_test
   name >:: fun _ ->
   assert_equal expected_output (take_from_table c tb bf)
 
+(**-------test functions for module drawing---------*)
+let right_number num = if num >= 1 && num <= 14 then true else false
+
+let deal_test (name : string) (expected_output : int) =
+  name >:: fun _ ->
+  assert_equal expected_output
+    (Drawing.deal |> List.sort_uniq compare |> List.length)
+
+let draw_test (name : string) (expected_output : bool) =
+  name >:: fun _ ->
+  assert_equal expected_output
+    (Drawing.draw |> Card.get_number |> right_number)
+
+(**-------test suites---------*)
 let card_tests =
   [
     get_number_test "card0 number is 1" card0 1;
@@ -332,8 +353,12 @@ let player_tests =
       player3 take1;
   ]
 
+let drawing_tests =
+  [ deal_test "14 cards" 14; draw_test "draw card" true ]
+
 let suite =
   "test suite for A2"
-  >::: List.flatten [ card_tests; table_tests; player_tests ]
+  >::: List.flatten
+         [ card_tests; table_tests; player_tests; drawing_tests ]
 
 let _ = run_test_tt_main suite
