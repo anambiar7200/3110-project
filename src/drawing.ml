@@ -1,7 +1,5 @@
 open Card
 
-type deck = card list
-
 exception OutOfCards
 
 let bound = 1000
