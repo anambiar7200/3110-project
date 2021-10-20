@@ -1,3 +1,4 @@
+open Card
 type player = Card.card list
 
 let empty : player = []
@@ -23,6 +24,10 @@ let rec play_card (c : Card.card) (p_h : player) : player =
   | h :: t -> if h = c then t else h :: play_card c t
   | empty -> raise OutOfCards
 
+let rec play_card2 (index : int) (p_h : player) : player = 
+  match p_h with
+  | h :: t -> if h = (List.nth Card.card_deck index) then t else play_card2 index t
+  | empty -> raise OutOfCards
 (**[check_ind] shows if the current index is equal to the insertion
    index *)
 let check_ind (current : int) (ind : int) =
@@ -57,7 +62,4 @@ let rec take_from_table
       | [] -> raise Table.NoSuchCard
       | h :: t -> if h = c then t else h :: take_from_table c t before)
 
-(**[draw_to_player] is a player hand updated from drawing a card from
-   the deck using [Drawing.draw]*)
-let draw_to_player (play : player) : player =
-  fst (Drawing.draw []) :: play
+let add_to_player (play : player) (c : Card.card) : player = c :: play

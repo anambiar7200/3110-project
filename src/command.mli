@@ -11,7 +11,6 @@ type command_phrase = string list
       ["play group 1 black 0 1 blue 26 1 orange 52"], then the command
       phrase is
       [\[ "group"; "1"; "black"; "0"; "1"; "blue"; "26"; "1"; "orange"; "52"\]]
-
     - If player command is
       ["play  run 10 blue 35 11 blue 36  12 blue 37"], then the command
       phrase is
@@ -60,4 +59,4 @@ val parse_input : string -> command
     {i malformed} if the verb is neither "play", "stop", nor "draw" if
     the verb is "stop" or "draw" and there is a non-empty command
     phrase, or if the verb is "play" and there is an empty command
-    phrase.*)
+    phrase. *)

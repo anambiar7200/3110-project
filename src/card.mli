@@ -19,6 +19,8 @@ type card
 val get_number : card -> int
 (** [get_number c] is the number of a card c. *)
 
+val card_deck : card list
+
 val get_color : card -> color_type
 (** [get_color c] is the color of a card c. *)
 

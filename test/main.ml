@@ -4,6 +4,7 @@ open Game.Card
 open Game.Player
 open Game.Drawing
 open Game.Table
+open Game.State
 
 (**---------------------------cards for testing-------------------------*)
 
@@ -107,8 +108,7 @@ let valid_table = create_table [ black_1_4; sevens3 ]
 
 let empty_table = create_table []
 
-(* ------------ player hands and moves for module player
-   ------------- *)
+(* -------- player hands and moves for module player----------- *)
 let p1 =
   [ card0; card100; card103; card99; card12; card36; card32; card85 ]
 
@@ -156,15 +156,15 @@ let player3 = build_player p3
    - If Player tries to play a card they do not own, raise exception
      NotYourCard*)
 let play1 = build_player p11
-(*card 99*)
+(*card 99 out*)
 
-(**card 85*)
+(**card 85 out*)
 let play2 = build_player p12
 
-let play3 = build_player p13 (*card 0*)
+let play3 = build_player p13 (*card 0 out*)
 
 let play4 = build_player p14
-(*card 100*)
+(*card 100 out*)
 
 (**Players' Hand after taking a card back
 
@@ -173,14 +173,6 @@ let play4 = build_player p14
 let pl_bk1 = play1
 
 let pl_bk11 = build_player p1_b
-
-(*Players' Hand after drawing a card from the deck - If the deck is
-  empty, raise exception OutOfCards*)
-(* let pdraw1 = draw_to_player player1
-
-   let pdraw2 = draw_to_player player2
-
-   let pdraw3 = draw_to_player player3 *)
 
 (**A set on the table after the player tries to play a card*)
 
@@ -200,6 +192,36 @@ let pl_tb2 = p31
 let take1 = p22
 (*take_from_table card30 p2 player3*)
 
+(* -------------- states for module state----------------- *)
+let init_st = State.init_state
+
+let init_deck = State.current_deck_lst init_st
+
+let current_player_hand = State.current_player_hand init_st
+
+let current_table_lst = State.current_table_lst init_st
+
+let pl_command1 =
+  Command.Play
+    [
+      "run"; "10"; "blue"; "35"; "11"; "blue"; "36"; "12"; "blue"; "37";
+    ]
+(* let pl_command2 = Command.Play [ "group"; "10"; "blue"; "35"; "11";
+   "blue"; "36"; "12"; "blue"; "37"; ] *)
+
+let draw_command1 = Command.Draw
+
+let stop_command1 = Command.Stop
+
+let go_test
+    (name : string)
+    (cmd : Command.command)
+    (st : State.state)
+    (expected_output : State.result) : test =
+  name >:: fun _ -> assert_equal expected_output (go cmd st)
+
+(* let state_tests = [ go_test "user command stop" stop_command1 init_st
+   (Legal init_st); go_test "user command draw" ] *)
 
 (*card not from the table*)
 (* let take2 = take_from_table card12 p2 player1 *)
