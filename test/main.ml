@@ -220,6 +220,52 @@ let draw_command1 = Command.Draw
 
 let stop_command1 = Command.Stop
 
+let go_test
+    (name : string)
+    (cmd : Command.command)
+    (st : State.state)
+    (expected_output : State.result) : test =
+  name >:: fun _ -> assert_equal expected_output (go cmd st)
+
+let match_result (r : result) =
+  match r with
+  | Illegal -> State.init_state
+  | LegalStop -> State.init_state
+  | Legal st -> st
+
+let go_draw_test
+    (name : string)
+    (cmd : Command.command)
+    (st : State.state)
+    (expected_output : bool) : test =
+  name >:: fun _ ->
+  assert_equal expected_output
+    (State.current_player_hand (match_result (go cmd st))
+    > State.current_player_hand st)
+
+let state_tests =
+  [
+    go_test "user command stop" stop_command1 init_st State.LegalStop;
+    go_test "user command illegal group"
+      (Command.Play
+         [
+           "group";
+           "10";
+           "blue";
+           "35";
+           "11";
+           "blue";
+           "36";
+           "12";
+           "blue";
+           "37";
+         ])
+      init_st Illegal;
+    go_test "user command is legal but player does not have those cards"
+      pl_command1 init_st Illegal;
+    go_draw_test "user draw command" draw_command1 init_st true;
+  ]
+
 (*card not from the table*)
 (* let take2 = take_from_table card12 p2 player1 *)
 (*card not belong to original set*)
