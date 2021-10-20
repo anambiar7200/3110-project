@@ -206,21 +206,8 @@ let pl_command1 =
     [
       "run"; "10"; "blue"; "35"; "11"; "blue"; "36"; "12"; "blue"; "37";
     ]
-
-let pl_command2 =
-  Command.Play
-    [
-      "group";
-      "10";
-      "blue";
-      "35";
-      "11";
-      "blue";
-      "36";
-      "12";
-      "blue";
-      "37";
-    ]
+(* let pl_command2 = Command.Play [ "group"; "10"; "blue"; "35"; "11";
+   "blue"; "36"; "12"; "blue"; "37"; ] *)
 
 let draw_command1 = Command.Draw
 
