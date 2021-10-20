@@ -1,3 +1,4 @@
+open Card
 type player = Card.card list
 
 let empty : player = []
@@ -18,16 +19,15 @@ let peek_player (p : player) =
   | [] -> raise OutOfCards
   | h :: t -> h
 
-let rec show_player_hand (p : player) =
-  match p with
-  | [] -> []
-  | h :: t -> h :: show_player_hand t
-
 let rec play_card (c : Card.card) (p_h : player) : player =
   match p_h with
   | h :: t -> if h = c then t else h :: play_card c t
   | empty -> raise OutOfCards
 
+let rec play_card2 (index : int) (p_h : player) : player = 
+  match p_h with
+  | h :: t -> if h = (List.nth Card.card_deck index) then t else play_card2 index t
+  | empty -> raise OutOfCards
 (**[check_ind] shows if the current index is equal to the insertion
    index *)
 let check_ind (current : int) (ind : int) =
@@ -44,9 +44,6 @@ let rec insert_to_table
   | h :: t ->
       if check_ind current ind then c :: table
       else h :: insert_to_table c t ind (current + 1)
-
-let player_create_set (clst : Card.card list) (kd : Table.set_type) =
-  Table.create_set kd clst
 
 let card_back (c : Card.card) (play : player) (before : player) : player
     =

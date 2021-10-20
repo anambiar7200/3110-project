@@ -16,9 +16,6 @@ type card = {
   index : int;
 }
 
-let build_card (num : int) (col : color_type) (ind : int) =
-  { number = num; color = col; index = ind }
-
 let get_number c = c.number
 
 let get_color c = c.color

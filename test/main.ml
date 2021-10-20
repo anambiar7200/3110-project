@@ -107,8 +107,7 @@ let valid_table = create_table [ black_1_4; sevens3 ]
 
 let empty_table = create_table []
 
-(* ------------ player hands and moves for module player
-   ------------- *)
+(* -------- player hands and moves for module player----------- *)
 let p1 =
   [ card0; card100; card103; card99; card12; card36; card32; card85 ]
 

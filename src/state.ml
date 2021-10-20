@@ -52,7 +52,7 @@ let draw_state (st : state) =
 let rec play_mul_card (clst : card list) (p : player) =
   match clst with
   | [] -> p
-  | h :: t -> play_mul_card t (Player.play_card h p)
+  | h :: t -> play_mul_card t (Player.play_card2 (get_index h) p)
 
 (**[command_phr_translation] returns a tuple of the kind of a set with a
    card list based on the command phrase*)
@@ -78,8 +78,7 @@ let rec match_phrase (str : string list) =
   match str with
   | [] -> raise Command.Malformed
   | h :: m :: e :: t ->
-      build_card (int_of_string h) (match_color m) (int_of_string e)
-      :: match_phrase t
+      List.nth card_deck (int_of_string e) :: match_phrase t
   | something_else -> raise Malformed
 
 (**[match_set_type] matches a valid to its corresponding set_type in
