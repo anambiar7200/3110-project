@@ -286,14 +286,16 @@ let play_card_test
     (c : card)
     (p : player)
     (expected_output : player) : test =
-  name >:: fun _ -> assert_equal expected_output (play_card c p)
+  name >:: fun _ ->
+  assert_equal expected_output (play_card c p) ~cmp:player_compare
 
 let play_card2_test
     (name : string)
     (id : int)
     (p : player)
     (expected_output : player) : test =
-  name >:: fun _ -> assert_equal expected_output (play_card2 id p)
+  name >:: fun _ ->
+  assert_equal expected_output (play_card2 id p) ~cmp:player_compare
 
 let insert_to_table_test
     (name : string)
@@ -311,7 +313,8 @@ let card_back_test
     (p : player)
     (bf : player)
     (expected_output : player) : test =
-  name >:: fun _ -> assert_equal expected_output (card_back c p bf)
+  name >:: fun _ ->
+  assert_equal expected_output (card_back c p bf) ~cmp:player_compare
 
 let take_from_table_test
     (name : string)
@@ -321,6 +324,15 @@ let take_from_table_test
     (expected_output : card list) : test =
   name >:: fun _ ->
   assert_equal expected_output (take_from_table c tb bf)
+
+let add_to_player_test
+    (name : string)
+    (p : player)
+    (c : card)
+    (expected_output : player) : test =
+  name >:: fun _ ->
+  assert_equal expected_output (add_to_player p c)
+    ~cmp:Player.player_compare
 
 (**-------test functions for module drawing---------*)
 let right_number num = if num >= 1 && num <= 14 then true else false
@@ -466,6 +478,10 @@ let player_tests =
       "player1 tires to take card12 from p2" card12 p2 player1;
     take_from_table_nyc_exception_test
       "player3 tires to take card70 from p2" card70 p2 player3;
+    add_to_player_test "play4 draws card100" play4 card100 play3;
+    add_to_player_test "play3 draws card0" play3 card0 play2;
+    add_to_player_test "play2 draws card85" play2 card85 play1;
+    add_to_player_test "play1 draws card99" play1 card99 player1;
   ]
 
 let drawing_tests =
