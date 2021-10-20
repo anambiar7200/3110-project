@@ -32,6 +32,7 @@ let current_table_lst (st : state) = st.current_table
 type result =
   | Legal of state
   | Illegal
+  | LegalStop
 
 (**[draw_state st] is the new state after [st.current_player] draws a
    card from [st.current_deck]. The new [current_deck] will be the
@@ -111,7 +112,7 @@ let go (c : command) (st : state) =
     | Command.Play str ->
         Legal (play_state st (command_phr_translation str))
     | Command.Draw -> Legal (draw_state st)
-    | Command.Stop -> Legal st
+    | Command.Stop -> LegalStop
   with
   | Table.InvalidCombo -> Illegal
   | Table.NoSuchCard -> Illegal
