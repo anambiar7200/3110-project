@@ -472,6 +472,7 @@ let match_result (r : result) =
   match r with
   | Illegal -> State.init_state
   | Legal st -> st
+  | LegalStop -> State.init_state
 
 let go_draw_test
     (name : string)
