@@ -569,7 +569,7 @@ let drawing_tests =
 
 let state_tests =
   [
-    go_test "user command stop" stop_command1 init_st (Legal init_st);
+    go_test "user command stop" stop_command1 init_st LegalStop;
     go_test "user command illegal group"
       (Command.Play
          [
