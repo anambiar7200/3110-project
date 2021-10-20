@@ -15,7 +15,8 @@ type command_phrase = string list
       ["play  run 10 blue 35 11 blue 36  12 blue 37"], then the command
       phrase is
       [\["run"; "10"; "blue"; "35"; "11"; "blue"; "36"; "12"; "blue"; "37"\]]
-      A command_phrase is not allowed to be the empty list. *)
+
+    A command_phrase is not allowed to be the empty list. *)
 
 (** Play: A player submit one group or one run with the verb play
     followed by run or group, number, color, index of cards. Draw: A
@@ -37,17 +38,25 @@ val parse_input : string -> command
 (** [parse_input str] parses a players's input into a [command]. The
     first word (i.e., consecutive sequence of non-space characters) of
     [str] becomes the verb. The rest of the words are command phrase.
+
     Examples:
     [parse_input "  play group 1 black 0 1 blue 26 1 orange 52 "] is
     [Play \[ "group"; "1"; "black"; "0"; "1"; "blue"; "26"; 
         "1"; "orange"; "52"\]]
+
     [parse_input "play  run 10 blue 35 11 blue 36 12 blue 37"] is
     [Play \["run"; "10"; "blue"; "35"; "11"; "blue"; "36"; "12"; "blue"; "37"\]]
+
     [parse_input "stop"] is [Stop] [parse_input "draw"] is [Draw]
+
     Requires: [str] contains only alphanumeric (A-Z, a-z, 0-9) and space
-    characters. Raises: [Empty] if [str] is the empty string or contains
-    only spaces. Raises: [Malformed] if the command is malformed. A
-    command is {i malformed} if the verb is neither "play", "stop", nor
-    "draw" if the verb is "stop" or "draw" and there is a non-empty
-    command phrase, or if the verb is "play" and there is an empty
-    command phrase.*)
+    characters.
+
+    Raises: [Empty] if [str] is the empty string or contains only
+    spaces.
+
+    Raises: [Malformed] if the command is malformed. A command is
+    {i malformed} if the verb is neither "play", "stop", nor "draw" if
+    the verb is "stop" or "draw" and there is a non-empty command
+    phrase, or if the verb is "play" and there is an empty command
+    phrase. *)
