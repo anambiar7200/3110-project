@@ -26,7 +26,7 @@ let rec play_card (c : Card.card) (p_h : player) : player =
 
 let rec play_card2 (index : int) (p_h : player) : player = 
   match p_h with
-  | h :: t -> if h = (List.nth Card.card_deck index) then t else play_card2 index t
+  | h :: t -> if get_index h = index then t else h :: play_card2 index t
   | empty -> raise OutOfCards
 (**[check_ind] shows if the current index is equal to the insertion
    index *)

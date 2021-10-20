@@ -300,6 +300,13 @@ let play_card_test
     (expected_output : player) : test =
   name >:: fun _ -> assert_equal expected_output (play_card c p)
 
+let play_card2_test
+    (name : string)
+    (id : int)
+    (p : player)
+    (expected_output : player) : test =
+  name >:: fun _ -> assert_equal expected_output (play_card2 id p)
+
 let insert_to_table_test
     (name : string)
     (c : card)
@@ -360,7 +367,6 @@ let drawing_init_test (name : string) =
   assert_equal ~cmp:cmp_set_like_lists Card.card_deck
     (Drawing.drawing_init ())
 
-(**-------test suites---------*)
 let play_card_exception_test (name : string) (c : card) (p : player) :
     test =
   name >:: fun _ ->
@@ -392,6 +398,7 @@ let take_from_table_nsc_exception_test
   assert_raises Game.Table.NoSuchCard (fun () ->
       take_from_table c tb bf)
 
+(**-------test suites---------*)
 let card_tests =
   [
     get_number_test "card0 number is 1" card0 1;
@@ -426,10 +433,10 @@ let player_tests =
     build_peek_player_test "build player 1" p1 card0;
     build_peek_player_test "build player 2" p2 card103;
     build_peek_player_test "build player 3" p3 card1;
-    play_card_test "1player 1 plays card99" card99 player1 play1;
-    play_card_test "2player 1 then plays card85" card85 play1 play2;
-    play_card_test "3player 1 then plays card0" card0 play2 play3;
-    play_card_test "4player 1 then plays card100" card100 play3 play4;
+    play_card2_test "1 player 1 plays card99" 99 player1 play1;
+    play_card2_test "2 player 1 then plays card85" 85 play1 play2;
+    play_card2_test "3 player 1 then plays card0" 0 play2 play3;
+    play_card2_test "4 player 1 then plays card100" 100 play3 play4;
     card_back_test "taking card99 back to player1" card99 pl_bk1 player1
       pl_bk11;
     insert_to_table_test "insert card70 to p1 at index 4" card70 p1 4 0
