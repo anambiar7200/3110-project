@@ -26,7 +26,7 @@ let rec play_card (c : Card.card) (p_h : player) : player =
 
 let rec play_card2 (index : int) (p_h : player) : player = 
   match p_h with
-  | h :: t -> if h = (List.nth Card.card_deck index) then t else play_card2 index t
+  | h :: t -> if get_index h = index then t else h :: play_card2 index t
   | empty -> raise OutOfCards
 (**[check_ind] shows if the current index is equal to the insertion
    index *)
@@ -62,4 +62,8 @@ let rec take_from_table
       | [] -> raise Table.NoSuchCard
       | h :: t -> if h = c then t else h :: take_from_table c t before)
 
-let add_to_player (play : player) (c : Card.card) : player = c :: play
+let add_to_player (play : player) (c : Card.card) : player = (c :: play)
+
+let player_compare (p1 : player) (p2 : player) =
+  List.sort_uniq (fun x y -> get_index x - get_index y) p1
+  = List.sort_uniq (fun x y -> get_index x - get_index y) p2

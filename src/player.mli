@@ -42,5 +42,8 @@ val card_back : Card.card -> player -> player -> player
    from the table*)
 
 val add_to_player : player -> Card.card -> player
-(**[draw_to_player] is a player's hand updated from drawing a card from
+(**[add_to_player] is a player's hand updated from drawing a card from
    the deck*)
+
+val player_compare : player -> player -> bool
+(** [player_compare p1 p2] returns true if the player hands are equal*)
