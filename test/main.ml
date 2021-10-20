@@ -112,6 +112,9 @@ let empty_table = create_table []
 let p1 =
   [ card0; card100; card103; card99; card12; card36; card32; card85 ]
 
+let p1_disordered =
+  [ card103; card99; card36; card0; card100; card12; card32; card85 ]
+
 let p1_b =
   [ card99; card0; card100; card103; card12; card36; card32; card85 ]
 
@@ -147,9 +150,15 @@ let p14 = [ card103; card12; card36; card32 ]
 (**Players' Hands*)
 let player1 = build_player p1
 
+let player1_disordered = build_player p1_disordered
+
 let player2 = build_player p2
 
 let player3 = build_player p3
+
+let card0_player = build_player [ card0 ]
+
+let card12_player = build_player [ card12 ]
 
 (**Players' Hand after playing a card
 
@@ -334,6 +343,13 @@ let add_to_player_test
   assert_equal expected_output (add_to_player p c)
     ~cmp:Player.player_compare
 
+let player_compare_test
+    (name : string)
+    (p1 : player)
+    (p2 : player)
+    (expected_output : bool) : test =
+  name >:: fun _ -> assert_equal expected_output (player_compare p1 p2)
+
 (**-------test functions for module drawing---------*)
 let right_number num = if num >= 1 && num <= 14 then true else false
 
@@ -478,6 +494,13 @@ let player_tests =
       "player1 tires to take card12 from p2" card12 p2 player1;
     take_from_table_nyc_exception_test
       "player3 tires to take card70 from p2" card70 p2 player3;
+    player_compare_test "p1 w/ diff order" player1 player1_disordered
+      true;
+    player_compare_test "player 1 and player 2 are different" player1
+      player2 false;
+    player_compare_test "card0 Black 1 and card12 Black 1" card0_player
+      card12_player false;
+    player_compare_test "empty and empty" empty empty true;
     add_to_player_test "play4 draws card100" play4 card100 play3;
     add_to_player_test "play3 draws card0" play3 card0 play2;
     add_to_player_test "play2 draws card85" play2 card85 play1;
