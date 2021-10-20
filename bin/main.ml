@@ -14,24 +14,26 @@ let valid_command_form =
 let empty_command_message =
   "You have entered an empty command. " ^ valid_command_form
 
-let invalid_command_message =
-  "The format of this command is invalid. " ^ valid_command_form
+let malformed_command_message =
+  "This is a malformed command. " ^ valid_command_form
 
-let fairewell_message = "Thank you for playing this game. Bye!"
+let illegal_move_message = "This move is illegal. " ^ valid_command_form
+
+let farewell_message = "Thank you for playing this game. Bye!"
 
 let get_color_str color_in =
   match color_in with
-  | Black -> "Black"
-  | Blue -> "Blue"
-  | Orange -> "Orange"
-  | Red -> "Red"
-  | Joker -> "Joker"
+  | Black -> "black"
+  | Blue -> "blue"
+  | Orange -> "orange"
+  | Red -> "red"
+  | Joker -> "joker"
 
 let print_card c =
   let number_str = string_of_int (get_number c) in
   let color_str = get_color_str (get_color c) in
   let index_str = string_of_int (get_index c) in
-  "{ number: " ^ number_str ^ "color: " ^ color_str ^ "index: "
+  "{ number: " ^ number_str ^ ", color: " ^ color_str ^ ", index: "
   ^ index_str ^ " }"
 
 let rec print_list lst =
@@ -55,12 +57,15 @@ let pp_list pp_elt lst =
   "[" ^ pp_elts lst ^ "]"
 
 let rec match_command state command =
-  let result = State.go command state in
+  let result = go command state in
   match result with
   | Legal new_state -> ask_for_command new_state
   | Illegal ->
-      print_endline invalid_command_message;
+      print_endline illegal_move_message;
       ask_for_command state
+  | LegalStop ->
+      print_endline farewell_message;
+      exit 0
 
 and ask_for_command state =
   print_list (current_player_hand state);
@@ -71,7 +76,7 @@ and ask_for_command state =
       print_endline empty_command_message;
       ask_for_command state
   | Malformed ->
-      print_endline invalid_command_message;
+      print_endline malformed_command_message;
       ask_for_command state
 
 let play_game () =
