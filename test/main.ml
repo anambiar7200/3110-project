@@ -4,6 +4,7 @@ open Game.Card
 open Game.Player
 open Game.Drawing
 open Game.Table
+open Game.State
 
 (**---------------------------cards for testing-------------------------*)
 
@@ -190,6 +191,50 @@ let pl_tb2 = p31
 (*no error*)
 let take1 = p22
 (*take_from_table card30 p2 player3*)
+
+(* -------------- states for module state----------------- *)
+let init_st = State.init_state
+
+let init_deck = State.current_deck_lst init_st
+
+let current_player_hand = State.current_player_hand init_st
+
+let current_table_lst = State.current_table_lst init_st
+
+let pl_command1 =
+  Command.Play
+    [
+      "run"; "10"; "blue"; "35"; "11"; "blue"; "36"; "12"; "blue"; "37";
+    ]
+
+let pl_command2 =
+  Command.Play
+    [
+      "group";
+      "10";
+      "blue";
+      "35";
+      "11";
+      "blue";
+      "36";
+      "12";
+      "blue";
+      "37";
+    ]
+
+let draw_command1 = Command.Draw
+
+let stop_command1 = Command.Stop
+
+let go_test
+    (name : string)
+    (cmd : Command.command)
+    (st : State.state)
+    (expected_output : State.result) : test =
+  name >:: fun _ -> assert_equal expected_output (go cmd st)
+
+(* let state_tests = [ go_test "user command stop" stop_command1 init_st
+   (Legal init_st); go_test "user command draw" ] *)
 
 (**------------test functions for module cards-------------*)
 
