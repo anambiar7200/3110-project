@@ -6,9 +6,7 @@ type table
     This module contains the functions that involve playing a card,
     checking set validity, .... **)
 
-exception InvalidCombo
-
-exception NoSuchCard
+(*exception InvalidCombo exception NoSuchCard *)
 
 type set_type =
   | Run
