@@ -28,6 +28,7 @@ val current_table_lst : state -> Table.table
 type result =
   | Legal of state
   | Illegal
+  | LegalStop
 
 val go : Command.command -> state -> result
 (**[go c st] is a result of a player command. The player may choose to

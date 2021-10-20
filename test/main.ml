@@ -221,6 +221,7 @@ let go_test
 let match_result (r : result) =
   match r with
   | Illegal -> State.init_state
+  | LegalStop -> State.init_state
   | Legal st -> st
 
 let go_draw_test
@@ -235,7 +236,7 @@ let go_draw_test
 
 let state_tests =
   [
-    go_test "user command stop" stop_command1 init_st (Legal init_st);
+    go_test "user command stop" stop_command1 init_st State.LegalStop;
     go_test "user command illegal group"
       (Command.Play
          [
