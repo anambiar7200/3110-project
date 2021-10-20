@@ -18,6 +18,11 @@ let peek_player (p : player) =
   | [] -> raise OutOfCards
   | h :: t -> h
 
+let rec show_player_hand (p : player) =
+  match p with
+  | [] -> []
+  | h :: t -> h :: show_player_hand t
+
 let rec play_card (c : Card.card) (p_h : player) : player =
   match p_h with
   | h :: t -> if h = c then t else h :: play_card c t
@@ -40,6 +45,9 @@ let rec insert_to_table
       if check_ind current ind then c :: table
       else h :: insert_to_table c t ind (current + 1)
 
+let player_create_set (clst : Card.card list) (kd : Table.set_type) =
+  Table.create_set kd clst
+
 let card_back (c : Card.card) (play : player) (before : player) : player
     =
   match List.mem c before with
@@ -57,6 +65,4 @@ let rec take_from_table
       | [] -> raise Table.NoSuchCard
       | h :: t -> if h = c then t else h :: take_from_table c t before)
 
-(**[draw_to_player] is a player hand updated from drawing a card from
-   the deck using [Drawing.draw]*)
-let draw_to_player (play : player) : player = Drawing.draw :: play
+let add_to_player (play : player) (c : Card.card) : player = c :: play

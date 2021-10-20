@@ -156,15 +156,15 @@ let player3 = build_player p3
    - If Player tries to play a card they do not own, raise exception
      NotYourCard*)
 let play1 = build_player p11
-(*card 99*)
+(*card 99 out*)
 
-(**card 85*)
+(**card 85 out*)
 let play2 = build_player p12
 
-let play3 = build_player p13 (*card 0*)
+let play3 = build_player p13 (*card 0 out*)
 
 let play4 = build_player p14
-(*card 100*)
+(*card 100 out*)
 
 (**Players' Hand after taking a card back
 
@@ -173,14 +173,6 @@ let play4 = build_player p14
 let pl_bk1 = play1
 
 let pl_bk11 = build_player p1_b
-
-(*Players' Hand after drawing a card from the deck - If the deck is
-  empty, raise exception OutOfCards*)
-(* let pdraw1 = draw_to_player player1
-
-   let pdraw2 = draw_to_player player2
-
-   let pdraw3 = draw_to_player player3 *)
 
 (**A set on the table after the player tries to play a card*)
 

@@ -16,6 +16,9 @@ type position_type =
 type card
 (** The type of card. *)
 
+val build_card : int -> color_type -> int -> card
+(**[build_Card] is a new card built frome specifications*)
+
 val get_number : card -> int
 (** [get_number c] is the number of a card c. *)
 
