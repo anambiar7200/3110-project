@@ -6,7 +6,7 @@ let bound = 1000
 
 let cards_per_person = 14
 
-let random_seed = Sys.time () |> int_of_float |> Random.init
+let random_seed n = n |> int_of_float |> Random.init
 
 let make_tuple card = (Random.int bound, card)
 
@@ -16,7 +16,7 @@ let tuple_compare a b =
 let de_tuple tuple = snd tuple
 
 let shuffle deck =
-  random_seed;
+  random_seed (Unix.time ());
   deck |> List.map make_tuple |> List.sort tuple_compare
   |> List.map de_tuple
 
