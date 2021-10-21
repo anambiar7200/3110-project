@@ -11,13 +11,11 @@ let valid_command_form =
    being draw, stop or play followed by run or group and list of \
    cards. cards element in a list of cards must be valid."
 
-let empty_command_message =
-  "You have entered an empty command. " ^ valid_command_form
+let empty_command_message = "You have entered an empty command. "
 
-let malformed_command_message =
-  "This is a malformed command. " ^ valid_command_form
+let malformed_command_message = "This is a malformed command. "
 
-let illegal_move_message = "This move is illegal. " ^ valid_command_form
+let illegal_move_message = "This move is illegal. "
 
 let farewell_message = "Thank you for playing this game. Bye!"
 
