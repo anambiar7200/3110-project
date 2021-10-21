@@ -1,10 +1,8 @@
 open Card
 
 type table
-(** Representation of dynamic gameplay.
-
-    This module contains the functions that involve playing a card,
-    checking set validity, .... **)
+(** Representation of dynamic gameplay. This module contains the
+    functions that involve playing a card, checking set validity, .... **)
 
 exception InvalidCombo
 

@@ -96,13 +96,18 @@ let match_set_type (str : string) =
    [current_player] will have [st.current_player] with the cards played
    removed from it.*)
 let play_state (st : state) ((str1, str2) : string * string list) =
-  let card_lst = match_phrase str2 in
-  {
-    current_deck = st.current_deck;
-    current_table =
-      create_table [ create_set (match_set_type str1) card_lst ];
-    current_player = play_mul_card card_lst st.current_player;
-  }
+  if
+    Table.valid_set
+      (create_set (match_set_type str1) (match_phrase str2))
+  then
+    let card_lst = match_phrase str2 in
+    {
+      current_deck = st.current_deck;
+      current_table =
+        create_table [ create_set (match_set_type str1) card_lst ];
+      current_player = play_mul_card card_lst st.current_player;
+    }
+  else raise InvalidCombo
 
 (*If the player decides to play, call play_state. If the player decides
   to draw, call draw_state*)
