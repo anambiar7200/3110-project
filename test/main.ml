@@ -251,6 +251,25 @@ let cmp_set_like_lists lst1 lst2 =
   && List.length lst2 = List.length uniq2
   && uniq1 = uniq2
 
+(**----------------string and arr for module command--------------*)
+let string_space = "  play group 1 black 0 1 blue 26 1 orange 52 "
+
+let space_arr =
+  [ "group"; "1"; "black"; "0"; "1"; "blue"; "26"; "1"; "orange"; "52" ]
+
+let string_stop = "stop"
+
+let string_empty = "   "
+
+let string_malformed = "play "
+
+let string_malformed2 = "draw now"
+
+let string_run = "play  run 10 blue 35 11 blue 36 12 blue 37"
+
+let run_arr =
+  [ "run"; "10"; "blue"; "35"; "11"; "blue"; "36"; "12"; "blue"; "37" ]
+
 (**------------test functions for module cards-------------*)
 
 let get_number_test (name : string) (c : card) (expected_output : int) :
@@ -411,6 +430,25 @@ let take_from_table_nsc_exception_test
   name >:: fun _ ->
   assert_raises Game.Table.NoSuchCard (fun () ->
       take_from_table c tb bf)
+
+(**-------test functions for module command---------*)
+
+let malformed_test (name : string) (str_input : string) : test =
+  name >:: fun _ ->
+  assert_raises Game.Command.Malformed (fun () ->
+      Game.Command.parse_input str_input)
+
+let empty_test (name : string) (str_input : string) : test =
+  name >:: fun _ ->
+  assert_raises Game.Command.Empty (fun () ->
+      Game.Command.parse_input str_input)
+
+let parse_input_test
+    (name : string)
+    (str_input : string)
+    (expected_output : Game.Command.command) : test =
+  name >:: fun _ ->
+  assert_equal expected_output (Game.Command.parse_input str_input)
 
 (**-------test functions for module state ---------*)
 let go_test
