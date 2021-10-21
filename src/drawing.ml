@@ -6,7 +6,7 @@ let bound = 1000
 
 let cards_per_person = 14
 
-let random_seed = Sys.time () |> int_of_float |> Random.init
+let random_seed = Unix.time () |> int_of_float |> Random.init
 
 let make_tuple card = (Random.int bound, card)
 
