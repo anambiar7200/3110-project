@@ -1,0 +1,51 @@
+MS1 New Rummikub 
+
+We built a modified, one-player, version of the board game Rummikub.
+The game involves 104 tiles, each of which has a color and number.
+Once the game is started, 14 cards will be automatically drawn and 
+will be displayed on the terminal.
+
+Players begin with 14 tiles, and attempt to get rid of these tiles
+by creating groups (sets of the same number but with different colors)
+and runs (sets of increasing consecutive numbers all in the same color).
+
+Currently, the player can’t use cards on the table to form sets. Since 
+the goal of MS1 was to implement the logic behind the game, the table is
+not currently visible to the player, only the player’s own hand can be seen.
+ 
+_____________________________________________________________________________________________
+How to set up the code: 
+
+Download the zip file from CMS, and unzip using the command “unzip rummikub.zip”
+Run “make build”
+Begin the game by running “make play”
+
+_____________________________________________________________________________________________
+How to play: 
+
+The player should choose to either play, draw or stop using the following commands. 
+
+PLAY: A player submits either a group or a run with the verb play followed by 
+either run or group and a list of cards. For each card, the player should enter 
+the card's number, color, and index. A lookup of the indices can be found here:
+https://bit.ly/3pnNrSC
+
+For a run, the player should enter cards in increasing numbers. All commands must 
+be in lowercase alphanumeric characters. Commands are case-sensitive.
+
+Example commands: 
+   play group 1 black 0 1 blue 26 1 orange 52
+   play run 10 blue 35 11 blue 36  12 blue 37
+ 
+DRAW: A player draws a card.  [Draw] takes no object. 
+Example command:
+          draw
+
+STOP: A player exits the game engine with this verb. [Stop] takes no object.
+Example command:
+    stop
+
+Once the player inputs a command, updated cards in the player's hand will
+be displayed on the terminal. If the player runs out of cards in their hand,
+it would say “Illegal” and prompt the player to enter a new command. 
+Implementing ending the game is in a later milestone, so right now, the game does not end. 
