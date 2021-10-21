@@ -112,6 +112,9 @@ let empty_table = create_table []
 let p1 =
   [ card0; card100; card103; card99; card12; card36; card32; card85 ]
 
+let p1_disordered =
+  [ card103; card99; card36; card0; card100; card12; card32; card85 ]
+
 let p1_b =
   [ card99; card0; card100; card103; card12; card36; card32; card85 ]
 
@@ -147,9 +150,15 @@ let p14 = [ card103; card12; card36; card32 ]
 (**Players' Hands*)
 let player1 = build_player p1
 
+let player1_disordered = build_player p1_disordered
+
 let player2 = build_player p2
 
 let player3 = build_player p3
+
+let card0_player = build_player [ card0 ]
+
+let card12_player = build_player [ card12 ]
 
 (**Players' Hand after playing a card
 
@@ -332,7 +341,16 @@ let play_card_test
     (c : card)
     (p : player)
     (expected_output : player) : test =
-  name >:: fun _ -> assert_equal expected_output (play_card c p)
+  name >:: fun _ ->
+  assert_equal expected_output (play_card c p) ~cmp:player_compare
+
+let play_card2_test
+    (name : string)
+    (id : int)
+    (p : player)
+    (expected_output : player) : test =
+  name >:: fun _ ->
+  assert_equal expected_output (play_card2 id p) ~cmp:player_compare
 
 let insert_to_table_test
     (name : string)
@@ -350,7 +368,8 @@ let card_back_test
     (p : player)
     (bf : player)
     (expected_output : player) : test =
-  name >:: fun _ -> assert_equal expected_output (card_back c p bf)
+  name >:: fun _ ->
+  assert_equal expected_output (card_back c p bf) ~cmp:player_compare
 
 let take_from_table_test
     (name : string)
@@ -360,6 +379,22 @@ let take_from_table_test
     (expected_output : card list) : test =
   name >:: fun _ ->
   assert_equal expected_output (take_from_table c tb bf)
+
+let add_to_player_test
+    (name : string)
+    (p : player)
+    (c : card)
+    (expected_output : player) : test =
+  name >:: fun _ ->
+  assert_equal expected_output (add_to_player p c)
+    ~cmp:Player.player_compare
+
+let player_compare_test
+    (name : string)
+    (p1 : player)
+    (p2 : player)
+    (expected_output : bool) : test =
+  name >:: fun _ -> assert_equal expected_output (player_compare p1 p2)
 
 (**-------test functions for module drawing---------*)
 let right_number num = if num >= 1 && num <= 14 then true else false
@@ -394,7 +429,6 @@ let drawing_init_test (name : string) =
   assert_equal ~cmp:cmp_set_like_lists Card.card_deck
     (Drawing.drawing_init ())
 
-(**-------test suites---------*)
 let play_card_exception_test (name : string) (c : card) (p : player) :
     test =
   name >:: fun _ ->
@@ -426,6 +460,30 @@ let take_from_table_nsc_exception_test
   assert_raises Game.Table.NoSuchCard (fun () ->
       take_from_table c tb bf)
 
+(**-------test functions for module state ---------*)
+let go_test
+    (name : string)
+    (cmd : Command.command)
+    (st : State.state)
+    (expected_output : State.result) : test =
+  name >:: fun _ -> assert_equal expected_output (go cmd st)
+
+let match_result (r : result) =
+  match r with
+  | Illegal -> State.init_state
+  | Legal st -> st
+
+let go_draw_test
+    (name : string)
+    (cmd : Command.command)
+    (st : State.state)
+    (expected_output : bool) : test =
+  name >:: fun _ ->
+  assert_equal expected_output
+    (State.current_player_hand (match_result (go cmd st))
+    > State.current_player_hand st)
+
+(**-------test suites---------*)
 let card_tests =
   [
     get_number_test "card0 number is 1" card0 1;
@@ -460,10 +518,10 @@ let player_tests =
     build_peek_player_test "build player 1" p1 card0;
     build_peek_player_test "build player 2" p2 card103;
     build_peek_player_test "build player 3" p3 card1;
-    play_card_test "1player 1 plays card99" card99 player1 play1;
-    play_card_test "2player 1 then plays card85" card85 play1 play2;
-    play_card_test "3player 1 then plays card0" card0 play2 play3;
-    play_card_test "4player 1 then plays card100" card100 play3 play4;
+    play_card2_test "1 player 1 plays card99" 99 player1 play1;
+    play_card2_test "2 player 1 then plays card85" 85 play1 play2;
+    play_card2_test "3 player 1 then plays card0" 0 play2 play3;
+    play_card2_test "4 player 1 then plays card100" 100 play3 play4;
     card_back_test "taking card99 back to player1" card99 pl_bk1 player1
       pl_bk11;
     insert_to_table_test "insert card70 to p1 at index 4" card70 p1 4 0
@@ -482,6 +540,17 @@ let player_tests =
       "player1 tires to take card12 from p2" card12 p2 player1;
     take_from_table_nyc_exception_test
       "player3 tires to take card70 from p2" card70 p2 player3;
+    player_compare_test "p1 w/ diff order" player1 player1_disordered
+      true;
+    player_compare_test "player 1 and player 2 are different" player1
+      player2 false;
+    player_compare_test "card0 Black 1 and card12 Black 1" card0_player
+      card12_player false;
+    player_compare_test "empty and empty" empty empty true;
+    add_to_player_test "play4 draws card100" play4 card100 play3;
+    add_to_player_test "play3 draws card0" play3 card0 play2;
+    add_to_player_test "play2 draws card85" play2 card85 play1;
+    add_to_player_test "play1 draws card99" play1 card99 player1;
   ]
 
 let drawing_tests =
@@ -495,6 +564,29 @@ let drawing_tests =
     draw_error_test
       "draw 1 card from a empty deck, raise OutOfCards error";
     drawing_init_test "test init and shuffle";
+  ]
+
+let state_tests =
+  [
+    go_test "user command stop" stop_command1 init_st (Legal init_st);
+    go_test "user command illegal group"
+      (Command.Play
+         [
+           "group";
+           "10";
+           "blue";
+           "35";
+           "11";
+           "blue";
+           "36";
+           "12";
+           "blue";
+           "37";
+         ])
+      init_st Illegal;
+    go_test "user command is legal but player does not have those cards"
+      pl_command1 init_st Illegal;
+    go_draw_test "user draw command" draw_command1 init_st true;
   ]
 
 let suite =
