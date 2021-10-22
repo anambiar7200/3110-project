@@ -72,15 +72,24 @@ let match_color (str : string) =
   | "blue" -> Blue
   | something -> raise Malformed
 
+(**[match_phrase_helper] matches a list of string representing card
+   information to a card list. It calls [buld_card] in module card, such
+   that we can call [play_mul_card] later on that card*)
+let rec match_phrase_helper (str : string list) =
+  match str with
+  | [] -> []
+  | h :: m :: e :: t ->
+      List.nth card_deck (int_of_string e) :: match_phrase_helper t
+  | something_else -> raise Malformed
+
 (**[match_phrase] matches a list of string representing card information
-   to a card list. It calls [buld_card] in module card, such that we can
-   call [play_mul_card] later on that card*)
+   to a card list. It raises a Command.Malformed exception if the
+   command is an empty list and calls [match_phrase_helper] if the
+   command is not an empty list*)
 let rec match_phrase (str : string list) =
   match str with
   | [] -> raise Command.Malformed
-  | h :: m :: e :: t ->
-      List.nth card_deck (int_of_string e) :: match_phrase t
-  | something_else -> raise Malformed
+  | _ -> match_phrase_helper str
 
 (**[match_set_type] matches a valid to its corresponding set_type in
    module table*)
@@ -124,5 +133,3 @@ let go (c : command) (st : state) =
   | Drawing.OutOfCards -> Illegal
   | Player.OutOfCards -> Illegal
   | Player.NotYourCard -> Illegal
-  | Command.Empty -> Illegal
-  | Command.Malformed -> Illegal

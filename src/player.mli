@@ -1,4 +1,4 @@
-type player
+type player = Card.card list
 (** The abstract type of values representing the player's hand. *)
 
 val empty : player

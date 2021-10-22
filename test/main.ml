@@ -220,52 +220,6 @@ let draw_command1 = Command.Draw
 
 let stop_command1 = Command.Stop
 
-let go_test
-    (name : string)
-    (cmd : Command.command)
-    (st : State.state)
-    (expected_output : State.result) : test =
-  name >:: fun _ -> assert_equal expected_output (go cmd st)
-
-let match_result (r : result) =
-  match r with
-  | Illegal -> State.init_state
-  | LegalStop -> State.init_state
-  | Legal st -> st
-
-let go_draw_test
-    (name : string)
-    (cmd : Command.command)
-    (st : State.state)
-    (expected_output : bool) : test =
-  name >:: fun _ ->
-  assert_equal expected_output
-    (State.current_player_hand (match_result (go cmd st))
-    > State.current_player_hand st)
-
-let state_tests =
-  [
-    go_test "user command stop" stop_command1 init_st State.LegalStop;
-    go_test "user command illegal group"
-      (Command.Play
-         [
-           "group";
-           "10";
-           "blue";
-           "35";
-           "11";
-           "blue";
-           "36";
-           "12";
-           "blue";
-           "37";
-         ])
-      init_st Illegal;
-    go_test "user command is legal but player does not have those cards"
-      pl_command1 init_st Illegal;
-    go_draw_test "user draw command" draw_command1 init_st true;
-  ]
-
 (*card not from the table*)
 (* let take2 = take_from_table card12 p2 player1 *)
 (*card not belong to original set*)
@@ -296,6 +250,25 @@ let cmp_set_like_lists lst1 lst2 =
   List.length lst1 = List.length uniq1
   && List.length lst2 = List.length uniq2
   && uniq1 = uniq2
+
+(**----------------string and arr for module command--------------*)
+let string_space = "  play group 1 black 0 1 blue 26 1 orange 52 "
+
+let space_arr =
+  [ "group"; "1"; "black"; "0"; "1"; "blue"; "26"; "1"; "orange"; "52" ]
+
+let string_stop = "stop"
+
+let string_empty = "   "
+
+let string_malformed = "play "
+
+let string_malformed2 = "draw now"
+
+let string_run = "play  run 10 blue 35 11 blue 36 12 blue 37"
+
+let run_arr =
+  [ "run"; "10"; "blue"; "35"; "11"; "blue"; "36"; "12"; "blue"; "37" ]
 
 (**------------test functions for module cards-------------*)
 
@@ -397,8 +370,6 @@ let player_compare_test
   name >:: fun _ -> assert_equal expected_output (player_compare p1 p2)
 
 (**-------test functions for module drawing---------*)
-let right_number num = if num >= 1 && num <= 14 then true else false
-
 let deal_test (name : string) =
   name >:: fun _ ->
   assert_equal ~cmp:cmp_set_like_lists deck_alot
@@ -460,6 +431,25 @@ let take_from_table_nsc_exception_test
   assert_raises Game.Table.NoSuchCard (fun () ->
       take_from_table c tb bf)
 
+(**-------test functions for module command---------*)
+
+let malformed_test (name : string) (str_input : string) : test =
+  name >:: fun _ ->
+  assert_raises Game.Command.Malformed (fun () ->
+      Game.Command.parse_input str_input)
+
+let empty_test (name : string) (str_input : string) : test =
+  name >:: fun _ ->
+  assert_raises Game.Command.Empty (fun () ->
+      Game.Command.parse_input str_input)
+
+let parse_input_test
+    (name : string)
+    (str_input : string)
+    (expected_output : Game.Command.command) : test =
+  name >:: fun _ ->
+  assert_equal expected_output (Game.Command.parse_input str_input)
+
 (**-------test functions for module state ---------*)
 let go_test
     (name : string)
@@ -472,16 +462,18 @@ let match_result (r : result) =
   match r with
   | Illegal -> State.init_state
   | Legal st -> st
+  | LegalStop -> State.init_state
 
 let go_draw_test
     (name : string)
     (cmd : Command.command)
-    (st : State.state)
-    (expected_output : bool) : test =
+    (st : State.state) : test =
   name >:: fun _ ->
-  assert_equal expected_output
-    (State.current_player_hand (match_result (go cmd st))
-    > State.current_player_hand st)
+  assert_equal
+    (go cmd st |> match_result |> State.current_player_hand
+   |> List.length)
+    ((State.current_player_hand st |> List.length) + 1)
+    ~printer:string_of_int
 
 (**-------test suites---------*)
 let card_tests =
@@ -568,7 +560,7 @@ let drawing_tests =
 
 let state_tests =
   [
-    go_test "user command stop" stop_command1 init_st (Legal init_st);
+    go_test "user command stop" stop_command1 init_st LegalStop;
     go_test "user command illegal group"
       (Command.Play
          [
@@ -586,7 +578,7 @@ let state_tests =
       init_st Illegal;
     go_test "user command is legal but player does not have those cards"
       pl_command1 init_st Illegal;
-    go_draw_test "user draw command" draw_command1 init_st true;
+    go_draw_test "user draw command" draw_command1 init_st;
   ]
 
 let suite =
