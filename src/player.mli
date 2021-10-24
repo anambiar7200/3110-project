@@ -21,19 +21,14 @@ val peek_player : player -> Card.card
 (**[peek_player] is the first card in the player's hand from left to
    right*)
 
-val play_card : Card.card -> player -> player
-(**[play_card] is the player's hand after playing a card*)
-
 val play_card2 : int -> player -> player
 (**[play_card] is the player's hand after playing a card*)
 
-val insert_to_table :
-  Card.card -> Card.card list -> int -> int -> Card.card list
+val insert_to_set : Card.card -> Table.set -> int -> int -> Table.set
 (**[insert_to_table] is a new set in the table after the player attempts
    to player a card*)
 
-val take_from_table :
-  Card.card -> Card.card list -> player -> Card.card list
+val take_from_set : Card.card -> Table.set -> player -> Table.set
 (**[tale_from_table] is a new set in the table after the player takes
    back a card they played*)
 

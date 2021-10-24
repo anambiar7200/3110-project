@@ -22,6 +22,10 @@ val create_set : set_type -> card list -> set
 (** [create_set k cs] creates a set with kind k and cards cs. [k] is of
     type set_type and [cs] is a card list.*)
 
+val get_cards : set -> card list
+
+val get_kind : set -> set_type
+
 val create_table : set list -> table
 (* [create_table lst] creates a table made up of the sets in lst. [lst]
    is a set list. *)

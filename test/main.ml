@@ -83,6 +83,12 @@ let card85 = List.nth card_deck 85
 (*Black 13*)
 let card12 = List.nth card_deck 12
 
+(*Blue 1*)
+let card26 = List.nth card_deck 26
+
+(*Red 1*)
+let card78 = List.nth card_deck 78
+
 (**----------------- sets and tables for testing----------------*)
 let black_1_4 = create_set Run [ card0; card1; card2; card3 ]
 
@@ -133,7 +139,7 @@ let p21 =
     card85;
   ]
 
-let p22 = [ card103; card70 ]
+let p22 = [ card103; card78 ]
 
 let p3 = [ card1; card66; card69; card30 ]
 
@@ -186,8 +192,8 @@ let pl_bk11 = build_player p1_b
 (**A set on the table after the player tries to play a card*)
 
 let pl_tb1 = p21
-(*insert_to_table card70 p1 4 0*)
 
+(*insert_to_table card70 p1 4 0*)
 let pl_tb2 = p31
 (*insert_to_table card103 p3 0 0*)
 
@@ -198,8 +204,15 @@ let pl_tb2 = p31
    - if the card is not in the table list, raise exception NoSuchCard*)
 
 (*no error*)
-let take1 = p22
-(*take_from_table card30 p2 player3*)
+let player_st = build_player p22
+
+let st_group1 = create_set Group [ card0; card26; card52 ]
+
+let st_group2 = create_set Group [ card78; card0; card26; card52 ]
+
+let st_group3 = create_set Group [ card0; card26; card52; card78 ]
+
+let st_group4 = create_set Group [ card0; card26; card78; card52 ]
 
 (* -------------- states for module state----------------- *)
 let init_st = State.init_state
@@ -309,14 +322,6 @@ let build_peek_player_test
   name >:: fun _ ->
   assert_equal expected_output (peek_player (build_player clst))
 
-let play_card_test
-    (name : string)
-    (c : card)
-    (p : player)
-    (expected_output : player) : test =
-  name >:: fun _ ->
-  assert_equal expected_output (play_card c p) ~cmp:player_compare
-
 let play_card2_test
     (name : string)
     (id : int)
@@ -325,15 +330,15 @@ let play_card2_test
   name >:: fun _ ->
   assert_equal expected_output (play_card2 id p) ~cmp:player_compare
 
-let insert_to_table_test
+let insert_to_set_test
     (name : string)
     (c : card)
-    (tb : card list)
+    (st : set)
     (ind : int)
     (cur : int)
-    (expected_output : card list) : test =
+    (expected_output : set) : test =
   name >:: fun _ ->
-  assert_equal expected_output (insert_to_table c tb ind cur)
+  assert_equal expected_output (insert_to_set c st ind cur)
 
 let card_back_test
     (name : string)
@@ -344,14 +349,13 @@ let card_back_test
   name >:: fun _ ->
   assert_equal expected_output (card_back c p bf) ~cmp:player_compare
 
-let take_from_table_test
+let take_from_set_test
     (name : string)
     (c : card)
-    (tb : card list)
+    (st : set)
     (bf : player)
-    (expected_output : card list) : test =
-  name >:: fun _ ->
-  assert_equal expected_output (take_from_table c tb bf)
+    (expected_output : set) : test =
+  name >:: fun _ -> assert_equal expected_output (take_from_set c st bf)
 
 let add_to_player_test
     (name : string)
@@ -400,11 +404,6 @@ let drawing_init_test (name : string) =
   assert_equal ~cmp:cmp_set_like_lists Card.card_deck
     (Drawing.drawing_init ())
 
-let play_card_exception_test (name : string) (c : card) (p : player) :
-    test =
-  name >:: fun _ ->
-  assert_raises Game.Player.OutOfCards (fun () -> play_card c p)
-
 let card_back_exception_test
     (name : string)
     (c : card)
@@ -413,23 +412,22 @@ let card_back_exception_test
   name >:: fun _ ->
   assert_raises Game.Player.NotYourCard (fun () -> card_back c p bf)
 
-let take_from_table_nyc_exception_test
+let take_from_set_nyc_exception_test
     (name : string)
     (c : card)
-    (tb : Card.card list)
+    (st : set)
     (bf : player) : test =
   name >:: fun _ ->
   assert_raises Game.Player.NotYourCard (fun () ->
-      take_from_table c tb bf)
+      take_from_set c st bf)
 
-let take_from_table_nsc_exception_test
+let take_from_set_nsc_exception_test
     (name : string)
     (c : card)
-    (tb : Card.card list)
+    (st : set)
     (bf : player) : test =
   name >:: fun _ ->
-  assert_raises Game.Table.NoSuchCard (fun () ->
-      take_from_table c tb bf)
+  assert_raises Game.Table.NoSuchCard (fun () -> take_from_set c st bf)
 
 (**-------test functions for module command---------*)
 
@@ -516,22 +514,30 @@ let player_tests =
     play_card2_test "4 player 1 then plays card100" 100 play3 play4;
     card_back_test "taking card99 back to player1" card99 pl_bk1 player1
       pl_bk11;
-    insert_to_table_test "insert card70 to p1 at index 4" card70 p1 4 0
-      pl_tb1;
-    insert_to_table_test "insert card103 to p3 at index 0" card103 p3 0
-      0 pl_tb2;
-    take_from_table_test "take card30 from p2 back to player3" card30 p2
-      player3 take1;
-    play_card_exception_test "player1 tries to play card70" card70
-      player1;
+    insert_to_set_test "insert card78 to st_group1 at index 0" card78
+      st_group1 0 0 st_group2;
+    insert_to_set_test "insert card78 to st_group1 at index 3" card78
+      st_group1 3 0 st_group3;
+    insert_to_set_test "insert card78 to st_group1 at index 2" card78
+      st_group1 2 0 st_group4;
+    insert_to_set_test "insert card78 to st_group1 at index 3" card78
+      st_group1 3 0 st_group3;
+    take_from_set_test "take card78 from st_group2 back to player_st"
+      card78 st_group2 player_st st_group1;
+    take_from_set_test "take card78 from st_group3 back to player_st"
+      card78 st_group3 player_st st_group1;
+    take_from_set_test "take card78 from st_group4 back to player_st"
+      card78 st_group4 player_st st_group1;
     card_back_exception_test "play2 tries to take card70 back" card70
       play2 player1;
     card_back_exception_test "player2 tries to take card100 back"
       card100 player2 player2;
-    take_from_table_nsc_exception_test
-      "player1 tires to take card12 from p2" card12 p2 player1;
-    take_from_table_nyc_exception_test
-      "player3 tires to take card70 from p2" card70 p2 player3;
+    take_from_set_nsc_exception_test
+      "player_st tires to take card12 from st_group2" card12 st_group2
+      player1;
+    take_from_set_nyc_exception_test
+      "player_st tires to take card0 from st_group2" card0 st_group2
+      player_st;
     player_compare_test "p1 w/ diff order" player1 player1_disordered
       true;
     player_compare_test "player 1 and player 2 are different" player1
