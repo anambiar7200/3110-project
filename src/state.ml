@@ -116,7 +116,7 @@ let play_state (st : state) ((str1, str2) : string * string list) =
         create_table [ create_set (match_set_type str1) card_lst ];
       current_player = play_mul_card card_lst st.current_player;
     }
-  else raise Table.InvalidCombo
+  else raise InvalidCombo
 
 (*If the player decides to play, call play_state. If the player decides
   to draw, call draw_state*)
