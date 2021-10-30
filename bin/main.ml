@@ -5,6 +5,11 @@ open Player
 open Drawing
 open State
 open Command
+open Graphics
+
+let open_window =
+  open_graph " 1200x800";
+  set_window_title "Rumikub"
 
 let valid_command_form =
   "Please enter a case sensitive valid command with the first word \
@@ -82,6 +87,8 @@ let play_game () =
   init_state |> ask_for_command
 
 let main () =
+  let () = open_window in
+  set_color black;
   ANSITerminal.print_string [ ANSITerminal.red ]
     "\n\n\
      Welcome to MS1 for the Rummikub Game Engine (CS 3110 Final \
