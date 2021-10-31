@@ -17,6 +17,9 @@ val is_empty : player -> bool
 val build_player : Card.card list -> player
 (**[build_player] is a player's hand built from a list of cards*)
 
+val player_size : player -> int
+(**[player_size] returns the number of cards on the player's hand*)
+
 val peek_player : player -> Card.card
 (**[peek_player] is the first card in the player's hand from left to
    right*)
