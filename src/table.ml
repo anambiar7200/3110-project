@@ -17,7 +17,13 @@ exception NoSuchCard
 
 let create_set kind cards = { kind; cards }
 
+let get_cards (st : set) = st.cards
+
+let get_kind (st : set) = st.kind
+
 let create_table sets = sets
+
+let set_size (st : set) = List.length st.cards
 
 let rec valid_group set =
   if set.kind = Run then false

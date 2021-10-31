@@ -15,8 +15,7 @@ type command_phrase = string list
       ["play  run 10 blue 35 11 blue 36  12 blue 37"], then the command
       phrase is
       [\["run"; "10"; "blue"; "35"; "11"; "blue"; "36"; "12"; "blue"; "37"\]]
-
-    A command_phrase is not allowed to be the empty list. *)
+      A command_phrase is not allowed to be the empty list. *)
 
 (** Play: A player submit one group or one run with the verb play
     followed by run or group, number, color, index of cards. Draw: A
@@ -41,15 +40,12 @@ val parse_input : string -> command
 (** [parse_input str] parses a players's input into a [command]. The
     first word (i.e., consecutive sequence of non-space characters) of
     [str] becomes the verb. The rest of the words are command phrase.
-
     Examples:
     [parse_input "  play group 1 black 0 1 blue 26 1 orange 52 "] is
     [Play \[ "group"; "1"; "black"; "0"; "1"; "blue"; "26"; 
         "1"; "orange"; "52"\]]
-
     [parse_input "play  run 10 blue 35 11 blue 36 12 blue 37"] is
     [Play \["run"; "10"; "blue"; "35"; "11"; "blue"; "36"; "12"; "blue"; "37"\]]
-
     [parse_input "stop"] is [Stop] [parse_input "draw"] is [Draw]
     [parse_input "endturn"] is [EndTurn]
 
