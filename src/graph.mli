@@ -34,7 +34,7 @@ val col_limit : int
 val player_max : int
 (**Limit for the maximum number of cards in the player's hand: 25*)
 
-val add_set : set -> set list list -> (color * color) * set list list
+val add_set : set -> set list list -> (int * int) * set list list
 (**[add_set] attempts to add a new set to a table/set list list
 
    - it fills all the rows in the tables one by one first
@@ -42,13 +42,21 @@ val add_set : set -> set list list -> (color * color) * set list list
      row
    - if there are no empty row left, we attempt to add the new set to
      one of the filled rows
-   - if there is not enough space in the table, raise [NoMoreSpace]*)
+   - if there is not enough space in the table, raise [NoMoreSpace]
+   - returns ((x, y), table_lst) where (x, y) is the new coordinate to
+     add the new set*)
 
-val draw_index : (color * color) * set list list -> color * color
+val draw_index : (int * int) * set list list -> color * color
 (**[draw_index] returns the (x, y) location info about where to draw a
-   new set*)
+   new set
 
-val draw_set : color * color -> color -> color -> set -> unit
+   - use after running [add_set]*)
+
+val draw_set : int * int -> int -> int -> set -> unit
 (**[draw_set] draws a set of cards at a specific location
 
-   - depends on [draw_index]*)
+   - requires (x, y)
+   - number of cards in the set
+   - (again) total number of cards in the set
+   - the new set you want to add to the table
+   - depends on [add_set] and [draw_index] *)
