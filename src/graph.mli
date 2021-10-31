@@ -44,5 +44,11 @@ val add_set : set -> set list list -> (color * color) * set list list
      one of the filled rows
    - if there is not enough space in the table, raise [NoMoreSpace]*)
 
+val draw_index : (color * color) * set list list -> color * color
+(**[draw_index] returns the (x, y) location info about where to draw a
+   new set*)
+
 val draw_set : color * color -> color -> color -> set -> unit
-(**[draw_set] draws a set of cards at a specific location*)
+(**[draw_set] draws a set of cards at a specific location
+
+   - depends on [draw_index]*)
