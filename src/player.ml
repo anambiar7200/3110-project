@@ -16,6 +16,8 @@ let is_empty (play : player) = if play = [] then true else false
 
 let build_player (clst : Card.card list) : player = clst
 
+let player_size (pl : player) = List.length pl
+
 let peek_player (p : player) =
   match p with
   | [] -> raise OutOfCards

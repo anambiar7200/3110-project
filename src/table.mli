@@ -32,6 +32,9 @@ val create_table : set list -> table
 (* [create_table lst] creates a table made up of the sets in lst. [lst]
    is a set list. *)
 
+val set_size : set -> int
+(**[set_size] returns the number of cards in a set*)
+
 val valid_set : set -> bool
 (** [valid_set s] return true if s is a valid run or group and false
     otherwise. [s] is of type set. *)

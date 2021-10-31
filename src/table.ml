@@ -23,6 +23,8 @@ let get_kind (st : set) = st.kind
 
 let create_table sets = sets
 
+let set_size (st : set) = List.length st.cards
+
 let rec valid_group set =
   if set.kind = Run then false
   else
