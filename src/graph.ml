@@ -15,6 +15,12 @@ let card_color (cd : card) =
   | Blue -> Graphics.blue
   | Joker -> Graphics.green
 
+(* let selected (cd : card) (x : int) (y : int) = moveto x y; draw_rect
+   x y 30 30; moveto (x + 13) (y + 10); fill_rect set_color (card_color
+   cd); draw_string (string_of_int (get_number cd)); set_color
+   Graphics.black; if get_color cd = Joker then draw_circle (x + 15) (y
+   + 15) 10 *)
+
 (**each card's dimension is 30x30*)
 let draw_card (cd : card) (x : int) (y : int) =
   moveto x y;
