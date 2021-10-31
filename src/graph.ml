@@ -114,8 +114,6 @@ let add_set (st : set) (tb : set list list) =
   if room_in_table tb > 0 then ((which_row tb, 1), add_to_table st tb)
   else (which_ind st tb 1, add_to_row st tb)
 
-(**[draw_index] returns the (x, y) location info about where to draw a
-   new set*)
 let draw_index (tup : (int * int) * set list list) =
   match tup with
   | (r, c), lst -> (((c - 1) * 30) + 150, ((r - 1) * 30) + 100)
