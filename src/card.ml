@@ -53,3 +53,10 @@ let rec create_card
         new_card_list
 
 let card_deck = create_card 13 1 Black 0 []
+
+let add_joker (card_list_in : card list) =
+  let j1 = { number = 0; color = Joker; index = 104 } in
+  let j2 = { number = 0; color = Joker; index = 105 } in
+  card_list_in @ [ j1; j2 ]
+
+let card_deck2 = add_joker card_deck

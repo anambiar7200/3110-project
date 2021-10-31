@@ -47,11 +47,16 @@ val parse_input : string -> command
     [parse_input "play  run 10 blue 35 11 blue 36 12 blue 37"] is
     [Play \["run"; "10"; "blue"; "35"; "11"; "blue"; "36"; "12"; "blue"; "37"\]]
     [parse_input "stop"] is [Stop] [parse_input "draw"] is [Draw]
-    [parse_input "endturn"] is [EndTurn] Requires: [str] contains only
-    alphanumeric (A-Z, a-z, 0-9) and space characters. Raises: [Empty]
-    if [str] is the empty string or contains only spaces. Raises:
-    [Malformed] if the command is malformed. A command is {i malformed}
-    if the verb is neither "play", "stop", "draw" nor endturn if the
-    verb is "stop", "draw", or "endturn" and there is a non-empty
-    command phrase, or if the verb is "play" and there is an empty
-    command phrase. *)
+    [parse_input "endturn"] is [EndTurn]
+
+    Requires: [str] contains only alphanumeric (A-Z, a-z, 0-9) and space
+    characters.
+
+    Raises: [Empty] if [str] is the empty string or contains only
+    spaces.
+
+    Raises: [Malformed] if the command is malformed. A command is
+    {i malformed} if the verb is neither "play", "stop", "draw" nor
+    endturn if the verb is "stop", "draw", or "endturn" and there is a
+    non-empty command phrase, or if the verb is "play" and there is an
+    empty command phrase. *)
