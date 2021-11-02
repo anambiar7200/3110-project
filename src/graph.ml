@@ -91,8 +91,7 @@ let rec add_to_row (st : set) (tb : set list list) =
   match tb with
   | [] -> raise NoMoreSpace
   | h :: t ->
-      if room_in_row h >= set_size st then
-        List.rev (st :: empty_set :: h) :: t
+      if room_in_row h >= set_size st then (h @ [ empty_set; st ]) :: t
       else add_to_row st t
 
 (**[which_row] returns the index of the row of the new set, index starts
