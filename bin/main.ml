@@ -58,6 +58,7 @@ let rec match_command state command =
   let result = go command state in
   match result with
   | Legal new_state -> ask_for_command new_state
+  | LegalSwitch st -> ask_for_command st
   | Illegal ->
       print_endline illegal_move_message;
       ask_for_command state
