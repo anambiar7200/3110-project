@@ -52,6 +52,10 @@ val draw_index : (int * int) * set list list -> color * color
 
    - use after running [add_set]*)
 
+val new_table : (int * int) * set list list -> set list list
+(**[new_table] retuns the new table/set list list after adding a new set
+   to the table*)
+
 val draw_set : int * int -> int -> int -> set -> unit
 (**[draw_set] draws a set of cards at a specific location
 
