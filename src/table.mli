@@ -1,10 +1,8 @@
 open Card
 
 type table
-(** Representation of dynamic gameplay.
-
-    This module contains the functions that involve playing a card,
-    checking set validity, .... **)
+(** Representation of dynamic gameplay. This module contains the
+    functions that involve playing a card, checking set validity, .... **)
 
 exception InvalidCombo
 
@@ -24,9 +22,18 @@ val create_set : set_type -> card list -> set
 (** [create_set k cs] creates a set with kind k and cards cs. [k] is of
     type set_type and [cs] is a card list.*)
 
+val get_cards : set -> card list
+(**[get_Cards] returns the card list in a set*)
+
+val get_kind : set -> set_type
+(**[get_kind] returns the set_type of a set*)
+
 val create_table : set list -> table
 (* [create_table lst] creates a table made up of the sets in lst. [lst]
    is a set list. *)
+
+val set_size : set -> int
+(**[set_size] returns the number of cards in a set*)
 
 val valid_set : set -> bool
 (** [valid_set s] return true if s is a valid run or group and false

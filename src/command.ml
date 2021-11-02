@@ -1,9 +1,12 @@
+open Player
+
 type command_phrase = string list
 
 type command =
   | Play of command_phrase
   | Draw
   | Stop
+  | EndTurn
 
 exception Empty
 
@@ -17,4 +20,5 @@ let parse_input str =
   | "play" :: t -> if t = [] then raise Malformed else Play t
   | "draw" :: t -> if t <> [] then raise Malformed else Draw
   | "stop" :: t -> if t <> [] then raise Malformed else Stop
+  | "endturn" :: t -> if t <> [] then raise Malformed else EndTurn
   | _ :: t -> raise Malformed
