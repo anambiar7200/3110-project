@@ -161,3 +161,9 @@ let rec card_position (new_set : card list) (first_card_pos: int * int) (card_po
   card_position t 
   ((fst first_card_pos) + 30, (snd first_card_pos)) new_card_pos_list ) 
   | [] -> card_pos_list 
+
+let table_card_position = []
+let player1_card_position = []
+let player2_card_position = []
+type player = Card.card list
+let get_player_card (player_in : int) (player_cards : card list ) = []
