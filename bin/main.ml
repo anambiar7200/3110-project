@@ -24,6 +24,9 @@ let illegal_move_message = "This move is illegal. "
 
 let farewell_message = "Thank you for playing this game. Bye!"
 
+let endturn_message =
+  "The other player has ended their turn. " ^ valid_command_form
+
 let get_color_str color_in =
   match color_in with
   | Black -> "black"
@@ -63,7 +66,9 @@ let rec match_command state command =
   let result = go command state in
   match result with
   | Legal new_state -> ask_for_command new_state
-  | LegalSwitch st -> ask_for_command st
+  | LegalSwitch st ->
+      print_endline endturn_message;
+      ask_for_command st
   | Illegal ->
       print_endline illegal_move_message;
       ask_for_command state
