@@ -33,6 +33,7 @@ type result =
   | Legal of state
   | Illegal
   | LegalStop
+  | LegalSwitch
 
 (**[draw_state st] is the new state after [st.current_player] draws a
    card from [st.current_deck]. The new [current_deck] will be the
@@ -127,6 +128,7 @@ let go (c : command) (st : state) =
         Legal (play_state st (command_phr_translation str))
     | Command.Draw -> Legal (draw_state st)
     | Command.Stop -> LegalStop
+    | Command.EndTurn -> LegalSwitch
   with
   | Table.InvalidCombo -> Illegal
   | Table.NoSuchCard -> Illegal
