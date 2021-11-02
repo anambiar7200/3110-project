@@ -10,6 +10,10 @@ val draw_card : card -> int -> int -> unit
 (**[draw_card] draws a card of user choice with its lower left corner at
    (x, y) of length 30 and width 30*)
 
+val color_select_card : card -> int -> int -> unit
+(**[color_select_card] colors a card which was chosen by the user with
+   its lower left corner at (x,y) of length 30 and width 30*)
+
 val init_window : int -> unit
 (**[init_window] is the initial window when the game first starts.
 
@@ -60,3 +64,14 @@ val draw_set : int * int -> int -> int -> set -> unit
    - (again) total number of cards in the set
    - the new set you want to add to the table
    - depends on [add_set] and [draw_index] *)
+
+val set_position : set -> set list list -> set * (int * int)
+(** [set_position] returns set and position of first card in the set*)
+
+val card_position :
+  card list ->
+  int * int ->
+  (int * (int * int)) list ->
+  (int * (int * int)) list
+(** [card_position] returns association list of card and its position
+    given a set. Key is card index. Value is card position.*)

@@ -15,13 +15,8 @@ let card_color (cd : card) =
   | Blue -> Graphics.blue
   | Joker -> Graphics.green
 
-(* let selected (cd : card) (x : int) (y : int) = moveto x y; draw_rect
-   x y 30 30; moveto (x + 13) (y + 10); fill_rect set_color (card_color
-   cd); draw_string (string_of_int (get_number cd)); set_color
-   Graphics.black; if get_color cd = Joker then draw_circle (x + 15) (y
-   + 15) 10 *)
-
 (**each card's dimension is 30x30*)
+
 let draw_card (cd : card) (x : int) (y : int) =
   moveto x y;
   draw_rect x y 30 30;
@@ -31,6 +26,18 @@ let draw_card (cd : card) (x : int) (y : int) =
   set_color Graphics.black;
   if get_color cd = Joker then draw_circle (x + 15) (y + 15) 10
 
+let color_select_card (cd : card) (x : int) (y : int) =
+  moveto x y;
+  draw_rect x y 30 30;
+  set_color Graphics.yellow;
+  fill_rect x y 30 30;
+  moveto (x + 13) (y + 10);
+  set_color (card_color cd);
+  draw_string (string_of_int (get_number cd));
+  set_color Graphics.black;
+  if get_color cd = Joker then draw_circle (x + 15) (y + 15) 10
+
+(** keep track of every card index *)
 let init_window (num_of_pl : int) =
   open_graph " 1200x600";
 
@@ -133,4 +140,24 @@ let rec draw_set
   | 0 -> moveto 0 0
   | n ->
       draw_card (List.nth (get_cards st) (total - n)) x y;
-      draw_set (x + 30, y) (num - 1) total st
+      draw_set (x + 30, y) (num - 1) total st;
+
+(** [get_card_pos] input card index output card position from association list*)
+
+((** Question: Does calling new_set on same set multiple times change the index 
+of the set? *))
+let set_position (st : set) (tb : set list list)  =
+  let new_set = get_cards st in
+  let newsetpos_table = add_set st tb in
+  let first_card_pos = draw_index newsetpos_table in
+  (new_set, first_card_pos)
+
+let rec card_position (new_set : card list) (first_card_pos: int * int) (card_pos_list: (int * (int*int)) list)  =
+  match new_set with 
+  | h :: t   -> (
+  let first_card = List.nth new_set 0 in
+  let first_card_ind = get_index first_card in
+  let new_card_pos_list = card_pos_list @ [(first_card_ind, first_card_pos)] in  
+  card_position t 
+  ((fst first_card_pos) + 30, (snd first_card_pos)) new_card_pos_list ) 
+  | [] -> card_pos_list 
