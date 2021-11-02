@@ -6,6 +6,7 @@ open Drawing
 open State
 open Command
 open Graph
+open Graphics
 
 let valid_command_form =
   "Please enter a case sensitive valid command with the first word \
@@ -97,8 +98,7 @@ let play_game () =
    Command.EndTurn init_state else init_state *)
 
 let main () =
-  let () = open_window in
-  set_color black;
+  init_window 2;
   ANSITerminal.print_string [ ANSITerminal.red ]
     "\n\n\
      Welcome to MS1 for the Rummikub Game Engine (CS 3110 Final \

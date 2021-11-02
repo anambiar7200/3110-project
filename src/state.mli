@@ -10,7 +10,7 @@ type state
 (** The abstract type of values representing the game state. *)
 
 val create_state :
-  card list -> set list list -> player -> player -> state
+  card list -> set list list -> player -> player -> int list -> state
 
 val init_state : state
 (**[init_state] is the initial state after the games starts. 14 cards

@@ -234,7 +234,7 @@ let next_pl = State.current_next_player init_st
 
 let test_state =
   State.create_state init_deck current_table_lst next_pl
-    current_player_hand
+    current_player_hand [ 0; 0 ]
 
 (*command to play a valid run*)
 let pl_command1 =

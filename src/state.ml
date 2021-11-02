@@ -10,6 +10,7 @@ type state = {
   current_table : set list list;
   current_player : player;
   next_player : player;
+  first_plays : int list;
 }
 
 (*shuffled card_deck*)
@@ -20,16 +21,20 @@ let dealed_card, remain_card_deck = deal shuffled_card_deck
 
 let dealed_card2, remain_card_deck2 = deal remain_card_deck
 
+let rec zeros n = if n = 0 then [] else 0 :: zeros (n - 1)
+
 let create_state
     (deck : card list)
     (tb : set list list)
     (cp : player)
-    (np : player) =
+    (np : player)
+    (fp : int list) =
   {
     current_deck = deck;
     current_table = tb;
     current_player = cp;
     next_player = np;
+    first_plays = fp;
   }
 
 let init_state : state =
@@ -38,6 +43,7 @@ let init_state : state =
     current_table = [];
     current_player = build_player dealed_card;
     next_player = build_player dealed_card2;
+    first_plays = zeros 2;
   }
 
 let current_deck_lst (st : state) = st.current_deck
@@ -66,6 +72,7 @@ let draw_state (st : state) =
     current_table = st.current_table;
     current_player = Player.add_to_player st.current_player card_drawn;
     next_player = st.next_player;
+    first_plays = st.first_plays;
   }
 
 (**[play_mul_card] is the player hand after playing multiple cards.
@@ -139,6 +146,7 @@ let play_state (st : state) ((str1, str2) : string * string list) =
              st.current_table);
       current_player = play_mul_card card_lst st.current_player;
       next_player = st.next_player;
+      first_plays = st.first_plays;
     }
   else raise InvalidCombo
 
@@ -150,6 +158,7 @@ let switch_state (st : state) =
     current_table = st.current_table;
     current_player = st.next_player;
     next_player = st.current_player;
+    first_plays = st.first_plays;
   }
 
 (*If the player decides to play, call play_state. If the player decides
