@@ -9,6 +9,9 @@ open Command
 type state
 (** The abstract type of values representing the game state. *)
 
+val create_state :
+  card list -> set list list -> player -> player -> state
+
 val init_state : state
 (**[init_state] is the initial state after the games starts. 14 cards
    should be dealt to each player. The table should be empty, and the
@@ -21,14 +24,18 @@ val current_deck_lst : state -> Card.card list
 val current_player_hand : state -> Player.player
 (**[current_player_hand] is the current player's hand. type : player*)
 
-val current_table_lst : state -> Table.table
+val current_table_lst : state -> Table.set list list
 (**[current_table_lst] is the current table. type : table*)
+
+val current_next_player : state -> Player.player
+(**[current_next_player] is the current next player's hand*)
 
 (** The type representing the result of an attempted movement. *)
 type result =
   | Legal of state
   | Illegal
   | LegalStop
+  | LegalSwitch of state
 
 val go : Command.command -> state -> result
 (**[go c st] is a result of a player command. The player may choose to

@@ -202,7 +202,13 @@ let current_player_hand = State.current_player_hand init_st
 (*current player hand of the initial state*)
 
 let current_table_lst = State.current_table_lst init_st
-(*currenttable of the initial state*)
+(*current table of the initial state*)
+
+let next_pl = State.current_next_player init_st
+
+let test_state =
+  State.create_state init_deck current_table_lst next_pl
+    current_player_hand
 
 (*command to play a valid run*)
 let pl_command1 =
@@ -447,6 +453,7 @@ let match_result (r : result) =
   | Illegal -> State.init_state
   | Legal st -> st
   | LegalStop -> State.init_state
+  | LegalSwitch st -> st
 
 let go_draw_test
     (name : string)
@@ -570,6 +577,8 @@ let state_tests =
       init_st Illegal;
     go_test "user command is legal but player does not have those cards"
       pl_command1 init_st Illegal;
+    go_test "test switch" Command.EndTurn init_st
+      (LegalSwitch test_state);
     go_draw_test "user draw command" draw_command1 init_st;
   ]
 

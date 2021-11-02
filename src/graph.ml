@@ -38,7 +38,7 @@ let init_window (num_of_pl : int) =
 
   moveto 1000 20;
   draw_string
-    ("Remaining Deck Size" ^ string_of_int (106 - (14 * num_of_pl)))
+    ("Remaining Deck Size: " ^ string_of_int (106 - (14 * num_of_pl)))
 
 let table_width = 900
 
@@ -122,6 +122,10 @@ let add_set (st : set) (tb : set list list) =
 let draw_index (tup : (int * int) * set list list) =
   match tup with
   | (r, c), lst -> (((c - 1) * 30) + 150, ((r - 1) * 30) + 100)
+
+let new_table (tup : (int * int) * set list list) =
+  match tup with
+  | (r, c), lst -> lst
 
 let rec draw_set
     ((x, y) : int * int)
