@@ -3,7 +3,7 @@ open Player
 open Drawing
 open Table
 open Command
-open Graph
+open Add
 
 type state = {
   current_deck : card list;
@@ -133,8 +133,8 @@ let play_state (st : state) ((str1, str2) : string * string list) =
     {
       current_deck = st.current_deck;
       current_table =
-        Graph.new_table
-          (Graph.add_set
+        new_table
+          (add_set
              (create_set (match_set_type str1) card_lst)
              st.current_table);
       current_player = play_mul_card card_lst st.current_player;
