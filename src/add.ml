@@ -83,6 +83,12 @@ let add_set (st : set) (tb : set list list) =
   if room_in_table tb > 0 then ((which_row tb, 1), add_to_table st tb)
   else (which_ind st tb 1, add_to_row st tb)
 
+let replace (tbl : set list) (idx : int) (s : set) =
+  List.mapi (fun i x -> if i = idx then s else x) tbl
+
+let edit_set (st : set) (tb : set list list) (row : int) (col : int) =
+  replace (List.nth tb row) (col * 2) st
+
 let draw_index (tup : (int * int) * set list list) =
   match tup with
   | (r, c), lst -> (((c - 1) * 30) + 150, ((r - 1) * 30) + 100)
