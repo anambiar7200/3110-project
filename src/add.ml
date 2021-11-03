@@ -96,3 +96,17 @@ let draw_index (tup : (int * int) * set list list) =
 let new_table (tup : (int * int) * set list list) =
   match tup with
   | (r, c), lst -> lst
+
+let rec prepend (cd : card) (s : set) =
+  match get_cards s with
+  | [] -> []
+  | h :: t -> [ cd; h ] @ t
+
+let rec append (cd : card) (s : set) =
+  match List.rev (get_cards s) with
+  | [] -> []
+  | h :: t -> List.rev ([ cd; h ] @ t)
+
+let edit_helper str (cd : card) (s : set) =
+  if str = "pre" then create_set (get_kind s) (prepend cd s)
+  else create_set (get_kind s) (append cd s)
