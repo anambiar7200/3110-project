@@ -11,6 +11,7 @@ type state = {
   current_player : player;
   next_player : player;
   first_plays : int list;
+  play_count : int;
 }
 
 (*shuffled card_deck*)
@@ -28,13 +29,15 @@ let create_state
     (tb : set list list)
     (cp : player)
     (np : player)
-    (fp : int list) =
+    (fp : int list)
+    (pc : int) =
   {
     current_deck = deck;
     current_table = tb;
     current_player = cp;
     next_player = np;
     first_plays = fp;
+    play_count = pc;
   }
 
 let init_state : state =
@@ -44,7 +47,11 @@ let init_state : state =
     current_player = build_player dealed_card;
     next_player = build_player dealed_card2;
     first_plays = zeros 2;
+    play_count = 0;
   }
+
+let card_sum (cards : card list) =
+  List.fold_left (fun acc x -> acc + Card.get_number x) 0 cards
 
 let current_deck_lst (st : state) = st.current_deck
 
@@ -60,6 +67,10 @@ type result =
   | LegalStop
   | LegalSwitch of state
 
+let first_play st =
+  let player = st.play_count mod 2 in
+  List.nth st.first_plays player = 1
+
 (**[draw_state st] is the new state after [st.current_player] draws a
    card from [st.current_deck]. The new [current_deck] will be the
    remaining deck from drawing. The table stays the same. The new
@@ -73,6 +84,7 @@ let draw_state (st : state) =
     current_player = Player.add_to_player st.current_player card_drawn;
     next_player = st.next_player;
     first_plays = st.first_plays;
+    play_count = succ st.play_count;
   }
 
 (**[play_mul_card] is the player hand after playing multiple cards.
@@ -132,10 +144,13 @@ let match_set_type (str : string) =
    The table will have the new set added. The new [current_player] will
    have [st.current_player] with the cards played removed from it.*)
 let play_state (st : state) ((str1, str2) : string * string list) =
+  let set = create_set (match_set_type str1) (match_phrase str2) in
+  let valid_set = Table.valid_set set in
   if
-    Table.valid_set
-      (create_set (match_set_type str1) (match_phrase str2))
-  then
+    (not (first_play st))
+    && (card_sum (get_cards set) < 20 || not valid_set)
+  then raise InvalidCombo
+  else if valid_set then
     let card_lst = match_phrase str2 in
     {
       current_deck = st.current_deck;
@@ -147,6 +162,7 @@ let play_state (st : state) ((str1, str2) : string * string list) =
       current_player = play_mul_card card_lst st.current_player;
       next_player = st.next_player;
       first_plays = st.first_plays;
+      play_count = st.play_count;
     }
   else raise InvalidCombo
 
@@ -159,6 +175,7 @@ let switch_state (st : state) =
     current_player = st.next_player;
     next_player = st.current_player;
     first_plays = st.first_plays;
+    play_count = succ st.play_count;
   }
 
 (*If the player decides to play, call play_state. If the player decides
