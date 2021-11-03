@@ -5,6 +5,8 @@ open Table
 open Command
 open Add
 
+exception Spaceholder
+
 type state = {
   current_deck : card list;
   current_table : set list list;
@@ -103,7 +105,7 @@ let rec play_mul_card (clst : card list) (p : player) =
    card list based on the command phrase*)
 let command_phr_translation (str : string list) =
   match str with
-  | [] -> raise Command.Malformed
+  | [] -> raise Malformed
   | h :: t -> (h, t)
 
 let edit_phr_translation (str : string list) =
@@ -125,6 +127,13 @@ let match_color (str : string) =
   | "red" -> Red
   | "blue" -> Blue
   | something -> raise Malformed
+
+let update_first_play st =
+  let pl = st.play_count mod 2 in
+  match st.first_plays with
+  | [] -> raise Spaceholder
+  | [ h; t ] -> if pl = 0 then [ h + 1; t ] else [ h; t + 1 ]
+  | something -> raise Spaceholder
 
 (**[match_phrase_helper] matches a list of string representing card
    information to a card list. It calls [buld_card] in module card, such
@@ -192,28 +201,54 @@ let switch_state (st : state) =
     play_count = succ st.play_count;
   }
 
+(*for parameter [c]index starts from 0 for the table - user c : 0-> 0 in
+  actual table index - user c : 1 -> 2 in actual table index - user c :
+  c -> c in actual table index*)
+
+(**[edit_state] is called when the player wants to either prepend or
+   append a card to a set. The function will return a new state with a
+   new table. However, [edit_state] is allowed to be called multiple
+   times, until the player calles [EndTurn] to switch player*)
 let edit_state
     (st : state)
-    ((pp, row, col, crd) : string * int * int * card) =
-  let tbl = current_table_lst st in
-  let set = edit_helper pp crd (Add.get_set tbl row col) in
-  let new_tbl = edit_table set tbl row col
+    ((str, r, c, cd) : string * int * int * card) =
+  let cur_tb = current_table_lst st in
+  if r > List.length cur_tb || c * 2 > List.length (List.nth cur_tb r)
+  then raise InvalidCombo
+  else
+    let s = edit_helper str cd (List.nth (List.nth cur_tb r) (c * 2)) in
+    let valid_set = valid_set s in
+    if
+      (not (first_play st))
+      && (card_sum (get_cards s) < 20 || not valid_set)
+    then raise InvalidCombo
+    else if valid_set then
+      let new_tb = replace cur_tb r (c * 2) s in
+      {
+        current_deck = st.current_deck;
+        current_table = new_tb;
+        current_player = play_card2 (get_index cd) st.current_player;
+        next_player = st.next_player;
+        first_plays = update_first_play st;
+        play_count = st.play_count;
+      }
+    else raise InvalidCombo
 
 (*If the player decides to play, call play_state. If the player decides
   to draw, call draw_state*)
 let go (c : command) (st : state) =
   try
     match c with
-    | Command.Play str ->
-        Legal (play_state st (command_phr_translation str))
-    | Command.Edit str ->
-        Legal (edit_state st (edit_phr_translation str))
-    | Command.Draw -> Legal (draw_state st)
-    | Command.Stop -> LegalStop
-    | Command.EndTurn -> LegalSwitch (switch_state st)
+    | Play str -> Legal (play_state st (command_phr_translation str))
+    | Edit str -> Legal (edit_state st (edit_phr_translation str))
+    | Draw -> Legal (draw_state st)
+    | Stop -> LegalStop
+    | EndTurn -> LegalSwitch (switch_state st)
   with
-  | Table.InvalidCombo -> Illegal
-  | Table.NoSuchCard -> Illegal
-  | Drawing.OutOfCards -> Illegal
-  | Player.OutOfCards -> Illegal
-  | Player.NotYourCard -> Illegal
+  | Spaceholder -> Illegal
+  | InvalidCombo -> Illegal
+  | NoSuchCard -> Illegal
+  | OutOfCards -> Illegal
+  (* | Drawing.OutOfCards -> Illegal *)
+  (* | Player.OutOfCards -> Illegal *)
+  | NotYourCard -> Illegal

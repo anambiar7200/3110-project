@@ -44,12 +44,10 @@ val new_table : (int * int) * set list list -> set list list
 (**[new_table] retuns the new table/set list list after adding a new set
    to the table*)
 
-val prepend : card -> set -> card list
-
-val append : card -> set -> card list
-
 val edit_helper : string -> card -> set -> set
+(**[edit_helper] either prepends or appends a card to a set based on
+   user choice to a set, and it reaturns a new set*)
 
-val get_set : set list list -> int -> int -> set
-
-val edit_table : set -> set list list -> int -> int -> set list
+val replace : set list list -> int -> int -> set -> set list list
+(**[replace] replaces a set in the table at a specific location, returns
+   the new table*)
