@@ -5,6 +5,8 @@ open Game.Player
 open Game.Drawing
 open Game.Table
 open Game.State
+open Game.Add
+open Game.Command
 
 (**---------------------------cards for testing-------------------------*)
 
@@ -95,6 +97,10 @@ let card78 = List.nth card_deck 78
 let joker1 = List.nth card_deck2 104
 
 let joker2 = List.nth card_deck2 105
+
+let card10 = List.nth card_deck2 10
+
+let card4 = List.nth card_deck2 4
 
 (**----------------- sets and tables for testing----------------*)
 let black_1_4 = create_set Run [ card0; card1; card2; card3 ]
@@ -218,36 +224,177 @@ let st_group4 = create_set Group [ card0; card26; card78; card52 ]
 (*insert to the middle*)
 
 (* -------------- states for module state----------------- *)
-let init_st = State.init_state
+let init_st = init_state
 (*initial state*)
 
-let init_deck = State.current_deck_lst init_st
+let init_deck = current_deck_lst init_st
 (*current deck of the initial state*)
 
-let current_player_hand = State.current_player_hand init_st
+let current_player_hand = current_player_hand init_st
 (*current player hand of the initial state*)
 
-let current_table_lst = State.current_table_lst init_st
+let current_table_lst = current_table_lst init_st
 (*current table of the initial state*)
 
-let next_pl = State.current_next_player init_st
+let next_pl = current_next_player init_st
 
 let test_state =
-  State.create_state init_deck current_table_lst next_pl
-    current_player_hand [ 0; 0 ] 1
+  create_state init_deck current_table_lst next_pl current_player_hand
+    [ 0; 0 ] 1
+
+let m_pl1 = [ card10; joker1; joker2; card4; card19 ]
+
+let m_pl2 = [ card30; card103; card102; card26 ]
+
+let edit_table1 =
+  [
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4 ];
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4 ];
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4 ];
+  ]
+
+let edit_b = create_state card_deck2 edit_table1 m_pl1 m_pl2 [ 1; 1 ] 2
 
 (*command to play a valid run*)
 let pl_command1 =
-  Command.Play
+  Play
     [
       "run"; "10"; "blue"; "35"; "11"; "blue"; "36"; "12"; "blue"; "37";
     ]
 
 (*command to draw*)
-let draw_command1 = Command.Draw
+let draw_command1 = Draw
 
 (*command to stop*)
-let stop_command1 = Command.Stop
+let stop_command1 = Stop
+
+(*invalid edit*)
+let edit_command1 = Edit [ "pre"; "1"; "1"; "10" ]
+
+let edit_command2 = Edit [ "post"; "1"; "1"; "10" ]
+
+let edit_command5 = Edit [ "post"; "0"; "3"; "10" ]
+
+let edit_command3 = Edit [ "pre"; "2"; "2"; "10" ]
+
+(*valid_edit*)
+let edit_command4 = Edit [ "post"; "0"; "2"; "4" ]
+
+let black_1_4p = create_set Run [ card0; card1; card2; card3; card4 ]
+
+let edit_table4 =
+  [
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4p ];
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4 ];
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4 ];
+  ]
+
+let m_pl14 = [ card10; joker1; joker2; card19 ]
+
+let edit_b4 =
+  create_state card_deck2 edit_table4 m_pl14 m_pl2 [ 2; 1 ] 2
+
+let edit_command9 = Edit [ "post"; "2"; "2"; "4" ]
+
+let edit_table9 =
+  [
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4 ];
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4 ];
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4p ];
+  ]
+
+let edit_b9 =
+  create_state card_deck2 edit_table9 m_pl14 m_pl2 [ 2; 1 ] 2
+
+let edit_command10 = Edit [ "pre"; "2"; "2"; "104" ]
+
+let edit_command11 = Edit [ "post"; "2"; "2"; "105" ]
+
+let black_1_4pj1 = create_set Run [ joker1; card0; card1; card2; card3 ]
+
+let black_1_4pj2 = create_set Run [ card0; card1; card2; card3; joker2 ]
+
+let m_pl110 = [ card10; joker2; card4; card19 ]
+
+let m_pl111 = [ card10; joker1; card4; card19 ]
+
+let edit_table10 =
+  [
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4 ];
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4 ];
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4pj1 ];
+  ]
+
+let edit_table11 =
+  [
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4 ];
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4 ];
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4pj2 ];
+  ]
+
+let edit_b10 =
+  create_state card_deck2 edit_table10 m_pl110 m_pl2 [ 2; 1 ] 2
+
+let edit_b11 =
+  create_state card_deck2 edit_table11 m_pl111 m_pl2 [ 2; 1 ] 2
+
+let sevens3p = create_set Group [ card19; card58; card32; card84 ]
+
+let sevens3a = create_set Group [ card58; card32; card84; card19 ]
+
+let sevens3pj1 = create_set Group [ joker1; card58; card32; card84 ]
+
+let sevens3aj2 = create_set Group [ card58; card32; card84; joker2 ]
+
+let edit_command6 = Edit [ "pre"; "1"; "1"; "104" ]
+
+let edit_command7 = Edit [ "post"; "1"; "1"; "105" ]
+
+let edit_table6 =
+  [
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4 ];
+    [ black_1_4; empty_set; sevens3pj1; empty_set; black_1_4 ];
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4 ];
+  ]
+
+let edit_table7 =
+  [
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4 ];
+    [ black_1_4; empty_set; sevens3aj2; empty_set; black_1_4 ];
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4 ];
+  ]
+
+let edit_b6 =
+  create_state card_deck2 edit_table6 m_pl110 m_pl2 [ 2; 1 ] 2
+
+let edit_b7 =
+  create_state card_deck2 edit_table7 m_pl111 m_pl2 [ 2; 1 ] 2
+
+let edit_command8 = Edit [ "pre"; "1"; "1"; "19" ]
+
+let edit_command66 = Edit [ "post"; "1"; "1"; "19" ]
+
+let m_pl18 = [ card10; joker1; joker2; card4 ]
+
+let edit_table8 =
+  [
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4 ];
+    [ black_1_4; empty_set; sevens3p; empty_set; black_1_4 ];
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4 ];
+  ]
+
+let edit_table66 =
+  [
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4 ];
+    [ black_1_4; empty_set; sevens3a; empty_set; black_1_4 ];
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4 ];
+  ]
+
+let edit_b8 =
+  create_state card_deck2 edit_table8 m_pl18 m_pl2 [ 2; 1 ] 2
+
+let edit_b66 =
+  create_state card_deck2 edit_table66 m_pl18 m_pl2 [ 2; 1 ] 2
 
 (**---------------------variable to test drawing---------------------*)
 
@@ -476,9 +623,9 @@ let go_test
 
 let match_result (r : result) =
   match r with
-  | Illegal -> State.init_state
+  | Illegal -> init_state
   | Legal st -> st
-  | LegalStop -> State.init_state
+  | LegalStop -> init_state
   | LegalSwitch st -> st
 
 let go_draw_test
@@ -615,6 +762,19 @@ let state_tests =
     go_test "test switch" Command.EndTurn init_st
       (LegalSwitch test_state);
     go_draw_test "user draw command" draw_command1 init_st;
+    go_test "cmd1 illegal" edit_command1 edit_b Illegal;
+    go_test "cmd2 illegal" edit_command2 edit_b Illegal;
+    go_test "cmd5 illegal" edit_command5 edit_b Illegal;
+    go_test "cmd3 illegal" edit_command3 edit_b Illegal;
+    go_test "cmd10 ilegal" edit_command10 edit_b Illegal;
+    (*legal*)
+    go_test "cmd8 legal" edit_command8 edit_b (Legal edit_b8);
+    go_test "cmd66 legal" edit_command66 edit_b (Legal edit_b66);
+    go_test "cmd6 legal" edit_command6 edit_b (Legal edit_b6);
+    go_test "cmd7 legal" edit_command7 edit_b (Legal edit_b7);
+    go_test "cmd11 legal" edit_command11 edit_b (Legal edit_b11);
+    go_test "cmd4 legal" edit_command4 edit_b (Legal edit_b4);
+    go_test "cmd9 legal" edit_command9 edit_b (Legal edit_b9);
   ]
 
 let suite =
