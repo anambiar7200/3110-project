@@ -162,8 +162,20 @@ let rec card_position (new_set : card list) (first_card_pos: int * int) (card_po
   ((fst first_card_pos) + 30, (snd first_card_pos)) new_card_pos_list ) 
   | [] -> card_pos_list 
 
-let table_card_position = []
-let player1_card_position = []
-let player2_card_position = []
-type player = Card.card list
-let get_player_card (player_in : int) (player_cards : card list ) = []
+(** get current player with State.current_player_hand (st : state)
+given mouse position out card index in player hand. Current player cards are 
+displayed at the bottom of screen. The first card left bottom corner is at 
+(150, y)*)
+let get_clicked_playercard (current_st : State.state) ((x, y): int*int)= 
+  let player_cards = State.current_player_hand current_st in
+  let float_ind = ((float_of_int x) -. 150.) /. 30. in
+  let ind = Float.to_int (Float.floor float_ind) in
+  let clicked_playercard = List.nth player_cards ind in clicked_playercard
+
+(** left bottom (x,y) coordinate of the first card in current player's hand is (150, 50) *)
+let get_clicked_playercard_pos (current_st : State.state) ((x, y): int*int)= 
+let float_ind = ((float_of_int x) -. 150.) /. 30. in
+let ind = Float.to_int (Float.floor float_ind) in
+let cardx = 150 + 30*ind in
+let cardy = 50 in
+(cardx, cardy)
