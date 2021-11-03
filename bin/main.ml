@@ -6,6 +6,7 @@ open Drawing
 open State
 open Command
 open Graph
+open Graphics
 
 let valid_command_form =
   "Please enter a case sensitive valid command with the first word \

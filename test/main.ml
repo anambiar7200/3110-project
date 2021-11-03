@@ -17,6 +17,9 @@ let card2 = List.nth card_deck 2
 (*Black 4*)
 let card3 = List.nth card_deck 3
 
+(* Red 12*)
+let card102 = List.nth card_deck 102
+
 (*Red 13*)
 let card103 = List.nth card_deck 103
 
@@ -89,14 +92,37 @@ let card26 = List.nth card_deck 26
 (*Red 1*)
 let card78 = List.nth card_deck 78
 
+let joker1 = List.nth card_deck2 104
+
+let joker2 = List.nth card_deck2 105
+
 (**----------------- sets and tables for testing----------------*)
 let black_1_4 = create_set Run [ card0; card1; card2; card3 ]
 
 (*let black_4_1 = create_set Run [ card3; card2; card1; card0 ] *)
+let black1_blue2_joker = create_set Run [ card0; card27; joker1 ]
+
+let black_1_2_joker = create_set Run [ card0; card1; joker2 ]
+
+let black_1_4_joker =
+  create_set Run [ card0; card1; card2; card3; joker2 ]
+
+let black_1_2_joker_3 = create_set Run [ card0; card1; joker1; card3 ]
+
+let joker_joker_black1 = create_set Run [ joker1; joker2; card0 ]
+
+let joker_black_1_4 =
+  create_set Run [ joker2; card0; card1; card2; card3 ]
+
+let red_12_13_joker = create_set Run [ card102; card103; joker2 ]
 
 let set_empty = create_set Run []
 
 let sevens3 = create_set Group [ card58; card32; card84 ]
+
+let sevens3_joker = create_set Group [ card58; card32; joker1; card84 ]
+
+let sevens2_joker = create_set Group [ card32; card84; joker2 ]
 
 let sevens4 = create_set Group [ card19; card32; card58; card84 ]
 
@@ -482,11 +508,20 @@ let card_tests =
 
 let table_tests =
   [
-    valid_set_test "Empty set" set_empty false;
+    valid_set_test "Empty set" set_empty true;
     valid_set_test "Black 1-4" black_1_4 true;
+    valid_set_test "Black 1-4, joker" black_1_4_joker true;
+    valid_set_test "Black 1,2, joker" black_1_2_joker true;
+    valid_set_test "Black 1, Blue 2 joker" black1_blue2_joker false;
+    valid_set_test "Black 1,2 joker Black 3" black_1_2_joker_3 true;
+    valid_set_test "joker joker black1" joker_joker_black1 false;
+    valid_set_test "joker black1_4" joker_black_1_4 false;
+    valid_set_test "red12,13 joker" red_12_13_joker false;
     (* valid_set_test "Black 4-1" black_4_1 true; *)
     valid_set_test "4 sevens" sevens4 true;
     valid_set_test "3 sevens" sevens3 true;
+    valid_set_test "3 sevens + joker" sevens3_joker true;
+    valid_set_test "2 sevens + joker" sevens2_joker true;
     valid_set_test "diff color run" black1_blue2_orange3 false;
     valid_set_test "rep color group" sevens_same false;
     valid_set_test "non consec run" non_consec_blues false;
