@@ -5,6 +5,8 @@ open Table
 open Command
 open Add
 
+exception Spaceholder
+
 type state = {
   current_deck : card list;
   current_table : set list list;
@@ -15,7 +17,7 @@ type state = {
 }
 
 (*shuffled card_deck*)
-let shuffled_card_deck = Drawing.drawing_init ()
+let shuffled_card_deck = drawing_init ()
 
 (*14 cards dealing to a player, plus the remaining card deck*)
 let dealed_card, remain_card_deck = deal shuffled_card_deck
@@ -51,7 +53,7 @@ let init_state : state =
   }
 
 let card_sum (cards : card list) =
-  List.fold_left (fun acc x -> acc + Card.get_number x) 0 cards
+  List.fold_left (fun acc x -> acc + get_number x) 0 cards
 
 let current_deck_lst (st : state) = st.current_deck
 
@@ -86,7 +88,7 @@ let draw_state (st : state) =
     current_deck = remain_deck;
     current_table = st.current_table;
     current_player = st.next_player;
-    next_player = Player.add_to_player st.current_player card_drawn;
+    next_player = add_to_player st.current_player card_drawn;
     first_plays = st.first_plays;
     play_count = succ st.play_count;
   }
@@ -97,14 +99,24 @@ let draw_state (st : state) =
 let rec play_mul_card (clst : card list) (p : player) =
   match clst with
   | [] -> p
-  | h :: t -> play_mul_card t (Player.play_card2 (get_index h) p)
+  | h :: t -> play_mul_card t (play_card2 (get_index h) p)
 
 (**[command_phr_translation] returns a tuple of the kind of a set with a
    card list based on the command phrase*)
 let command_phr_translation (str : string list) =
   match str with
-  | [] -> raise Command.Malformed
+  | [] -> raise Malformed
   | h :: t -> (h, t)
+
+let edit_phr_translation (str : string list) =
+  match str with
+  | [] -> raise Malformed
+  | [ s; r; c; cd ] ->
+      ( s,
+        int_of_string r,
+        int_of_string c,
+        List.nth card_deck2 (int_of_string cd) )
+  | something -> raise Malformed
 
 (**[match_color] is the color type of the card. The function matches a
    string representing a color to a [color_type] in modele card*)
@@ -132,7 +144,7 @@ let rec match_phrase_helper (str : string list) =
    command is not an empty list*)
 let rec match_phrase (str : string list) =
   match str with
-  | [] -> raise Command.Malformed
+  | [] -> raise Malformed
   | _ -> match_phrase_helper str
 
 (**[match_set_type] matches a valid to its corresponding set_type in
@@ -143,13 +155,23 @@ let match_set_type (str : string) =
   | "run" -> Run
   | something_else -> raise Malformed
 
+let update_first_play st =
+  let pl = st.play_count mod 2 in
+  match st.first_plays with
+  | [] -> raise Spaceholder
+  | [ h; t ] -> if pl = 0 then [ h + 1; t ] else [ h; t + 1 ]
+  | something -> raise Spaceholder
+
 (**[play_state st] is the new state after [st.current_player] plays some
    cards according to a command. The [current_deck] will stay the same.
-   The table will have the new set added. The new [current_player] will
-   have [st.current_player] with the cards played removed from it.*)
+   The table will have the new set added. After the player players, the
+   current player will be automatically switched to the next player.
+   (aka their turn will end automatically) The old next player will then
+   become the current player. [first_plays] ad [play_count] will also be
+   updated accordingly*)
 let play_state (st : state) ((str1, str2) : string * string list) =
   let set = create_set (match_set_type str1) (match_phrase str2) in
-  let valid_set = Table.valid_set set in
+  let valid_set = valid_set set in
   if
     (not (first_play st))
     && (card_sum (get_cards set) < 20 || not valid_set)
@@ -165,10 +187,43 @@ let play_state (st : state) ((str1, str2) : string * string list) =
              st.current_table);
       current_player = st.next_player;
       next_player = play_mul_card card_lst st.current_player;
-      first_plays = st.first_plays;
-      play_count = st.play_count;
+      first_plays = update_first_play st;
+      play_count = succ st.play_count;
     }
   else raise InvalidCombo
+
+(*for parameter [c]index starts from 0 for the table - user c : 0-> 0 in
+  actual table index - user c : 1 -> 2 in actual table index - user c :
+  c -> c in actual table index*)
+
+(**[edit_state] is called when the player wants to either prepend or
+   append a card to a set. The function will return a new state with a
+   new table. However, [edit_state] is allowed to be called multiple
+   times, until the player calles [EndTurn] to switch player*)
+let edit_state
+    (st : state)
+    ((str, r, c, cd) : string * int * int * card) =
+  let cur_tb = current_table_lst st in
+  if r > List.length cur_tb || c * 2 > List.length (List.nth cur_tb r)
+  then raise InvalidCombo
+  else
+    let s = edit_helper str cd (List.nth (List.nth cur_tb r) (c * 2)) in
+    let valid_set = valid_set s in
+    if
+      (not (first_play st))
+      && (card_sum (get_cards s) < 20 || not valid_set)
+    then raise InvalidCombo
+    else if valid_set then
+      let new_tb = replace cur_tb r (c * 2) s in
+      {
+        current_deck = st.current_deck;
+        current_table = new_tb;
+        current_player = play_card2 (get_index cd) st.current_player;
+        next_player = st.next_player;
+        first_plays = update_first_play st;
+        play_count = st.play_count;
+      }
+    else raise InvalidCombo
 
 (**[switch_state] switches the current player hand to the next player
    hand, and make the next player hand to be the current player hand*)
@@ -187,14 +242,16 @@ let switch_state (st : state) =
 let go (c : command) (st : state) =
   try
     match c with
-    | Command.Play str ->
-        Legal (play_state st (command_phr_translation str))
-    | Command.Draw -> Legal (draw_state st)
-    | Command.Stop -> LegalStop
-    | Command.EndTurn -> LegalSwitch (switch_state st)
+    | Play str -> Legal (play_state st (command_phr_translation str))
+    | Edit str -> Legal (edit_state st (edit_phr_translation str))
+    | Draw -> Legal (draw_state st)
+    | Stop -> LegalStop
+    | EndTurn -> LegalSwitch (switch_state st)
   with
-  | Table.InvalidCombo -> Illegal
-  | Table.NoSuchCard -> Illegal
-  | Drawing.OutOfCards -> Illegal
-  | Player.OutOfCards -> Illegal
-  | Player.NotYourCard -> Illegal
+  | Spaceholder -> Illegal
+  | InvalidCombo -> Illegal
+  | NoSuchCard -> Illegal
+  | OutOfCards -> Illegal
+  (* | Drawing.OutOfCards -> Illegal *)
+  (* | Player.OutOfCards -> Illegal *)
+  | NotYourCard -> Illegal

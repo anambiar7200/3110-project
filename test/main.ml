@@ -396,6 +396,42 @@ let edit_b8 =
 let edit_b66 =
   create_state card_deck2 edit_table66 m_pl18 m_pl2 [ 2; 1 ] 2
 
+let m_pl_pl1 = build_player (get_cards black_1_4)
+
+let new_pl_st =
+  create_state card_deck2 edit_table1 m_pl_pl1 m_pl2 [ 1; 1 ] 2
+
+let new_ppp = build_player []
+
+let edit_table1pl =
+  [
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4 ];
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4 ];
+    [ black_1_4; empty_set; sevens3; empty_set; black_1_4 ];
+    [ black_1_4 ];
+  ]
+
+let new_pl_st1 =
+  create_state card_deck2 edit_table1pl m_pl2 new_ppp [ 2; 1 ] 3
+
+let pl_command22 =
+  Play
+    [
+      "run";
+      "1";
+      "black";
+      "0";
+      "2";
+      "black";
+      "1";
+      "3";
+      "black";
+      "2";
+      "4";
+      "black";
+      "3";
+    ]
+
 (**---------------------variable to test drawing---------------------*)
 
 (*card not from the table*)
@@ -775,6 +811,7 @@ let state_tests =
     go_test "cmd11 legal" edit_command11 edit_b (Legal edit_b11);
     go_test "cmd4 legal" edit_command4 edit_b (Legal edit_b4);
     go_test "cmd9 legal" edit_command9 edit_b (Legal edit_b9);
+    go_test "playyyy" pl_command22 new_pl_st (Legal new_pl_st1);
   ]
 
 let suite =
