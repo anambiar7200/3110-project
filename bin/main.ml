@@ -7,6 +7,7 @@ open State
 open Command
 open Graph
 open Graphics
+open Add
 
 let valid_command_form =
   "Please enter a case sensitive valid command with the first word \
@@ -80,10 +81,46 @@ and ask_for_command state =
       print_endline malformed_command_message;
       ask_for_command state
 
-let color_select_card (cd : card) (x : int) (y : int) =
+let clear_graph state new_set =
+  Graphics.clear_graph ();
+  let added_set = state |> current_table_lst |> add_set new_set in
+  draw_current_player (current_player_hand state) 150 50;
+  let size = new_set |> set_size in
+  draw_set (draw_index added_set) size size new_set;
+  draw_rect 0 0 60 30;
+  moveto 13 10;
+  set_color (rgb 153 0 0);
+  draw_string "STOP";
+  set_color black;
+  draw_rect 65 0 60 30;
+  moveto 78 10;
+  set_color (rgb 51 0 102);
+  draw_string "DRAW";
+  set_color black;
+  draw_rect 130 0 60 30;
+  moveto 143 10;
+  set_color (rgb 102 102 0);
+  draw_string "ENDTURN";
+  set_color black;
+  draw_next_player (current_next_player init_state) 50 540
+
+let is_changed (card : card) (already_clicked : card list) =
+  let length = List.length already_clicked in
+  let new_clicked =
+    List.filter (fun x -> get_index x <> get_index card) already_clicked
+  in
+  let new_length = List.length new_clicked in
+  (length <> new_length, new_clicked)
+
+let color_select_card
+    (cd : card)
+    (x : int)
+    (y : int)
+    (already_clicked : card list) =
   moveto x y;
   draw_rect x y 30 30;
-  set_color Graphics.yellow;
+  let is_changed cd already_clicked then set_color Graphics.red
+  else set_color Graphics.yellow;
   fill_rect x y 30 30;
   moveto (x + 13) (y + 10);
   set_color (card_color cd);
@@ -104,21 +141,22 @@ let get_clicked_playercard
   let clicked_playercard = List.nth player_cards ind in
   clicked_playercard
 
-let rec loop state =
+let rec loop state clicked_cards =
   let e = wait_next_event [ Button_down ] in
   if e.button then
     let clicked_card =
       get_clicked_playercard state (e.mouse_x, e.mouse_y)
     in
-    clicked_card
-  else loop state
+    color_select_card clicked_card e.mouse_x e.mouse_y clicked_cards
+  else loop state clicked_cards
 
 (* if e.key <> 'q' then loop state else () *)
 
 let play_game () =
   init_window 2;
   print_endline "let's play a game >:)";
-  loop init_state;
+  let _ = loop init_state [] in
+  print_endline "trigger";
   init_state |> ask_for_command
 
 (* let rec game () = let event = wait_next_event [Button_down;Button_up]

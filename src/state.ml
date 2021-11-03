@@ -13,7 +13,7 @@ type state = {
 }
 
 (*shuffled card_deck*)
-let shuffled_card_deck = Drawing.drawing_init ()
+let shuffled_card_deck = drawing_init ()
 
 (*14 cards dealing to a player, plus the remaining card deck*)
 let dealed_card, remain_card_deck = deal shuffled_card_deck
@@ -64,7 +64,7 @@ let draw_state (st : state) =
   {
     current_deck = remain_deck;
     current_table = st.current_table;
-    current_player = Player.add_to_player st.current_player card_drawn;
+    current_player = add_to_player st.current_player card_drawn;
     next_player = st.next_player;
   }
 
@@ -74,13 +74,13 @@ let draw_state (st : state) =
 let rec play_mul_card (clst : card list) (p : player) =
   match clst with
   | [] -> p
-  | h :: t -> play_mul_card t (Player.play_card2 (get_index h) p)
+  | h :: t -> play_mul_card t (play_card2 (get_index h) p)
 
 (**[command_phr_translation] returns a tuple of the kind of a set with a
    card list based on the command phrase*)
 let command_phr_translation (str : string list) =
   match str with
-  | [] -> raise Command.Malformed
+  | [] -> raise Malformed
   | h :: t -> (h, t)
 
 (**[match_color] is the color type of the card. The function matches a
@@ -109,7 +109,7 @@ let rec match_phrase_helper (str : string list) =
    command is not an empty list*)
 let rec match_phrase (str : string list) =
   match str with
-  | [] -> raise Command.Malformed
+  | [] -> raise Malformed
   | _ -> match_phrase_helper str
 
 (**[match_set_type] matches a valid to its corresponding set_type in

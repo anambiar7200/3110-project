@@ -1,10 +1,15 @@
 open Graphics
 open Card
 open Table
+open Player
 
 type graph
 
 val card_color : card -> color
+
+val draw_current_player : player -> int -> int -> unit
+
+val draw_next_player : player -> int -> int -> unit
 
 val draw_card : card -> int -> int -> unit
 (**[draw_card] draws a card of user choice with its lower left corner at
