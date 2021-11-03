@@ -46,7 +46,7 @@ let init_state : state =
     current_table = [];
     current_player = build_player dealed_card;
     next_player = build_player dealed_card2;
-    first_plays = zeros 2;
+    first_plays = [ 0; 0 ];
     play_count = 0;
   }
 
@@ -60,6 +60,10 @@ let current_player_hand (st : state) = st.current_player
 let current_table_lst (st : state) = st.current_table
 
 let current_next_player (st : state) = st.next_player
+
+let first_pl (st : state) = st.first_plays
+
+let current_count (st : state) = st.play_count
 
 type result =
   | Legal of state
@@ -81,8 +85,8 @@ let draw_state (st : state) =
   {
     current_deck = remain_deck;
     current_table = st.current_table;
-    current_player = Player.add_to_player st.current_player card_drawn;
-    next_player = st.next_player;
+    current_player = st.next_player;
+    next_player = Player.add_to_player st.current_player card_drawn;
     first_plays = st.first_plays;
     play_count = succ st.play_count;
   }
@@ -159,8 +163,8 @@ let play_state (st : state) ((str1, str2) : string * string list) =
           (add_set
              (create_set (match_set_type str1) card_lst)
              st.current_table);
-      current_player = play_mul_card card_lst st.current_player;
-      next_player = st.next_player;
+      current_player = st.next_player;
+      next_player = play_mul_card card_lst st.current_player;
       first_plays = st.first_plays;
       play_count = st.play_count;
     }

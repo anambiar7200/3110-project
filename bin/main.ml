@@ -89,13 +89,18 @@ let play_game () =
   print_endline "let's play a game >:)";
   init_state |> ask_for_command
 
-(* let rec game () = let event = wait_next_event [Button_down;Button_up]
-   in let position = (event.mouse_x, event.mouse_y) in match position
-   with |(x, y) -> if (x >= 0 and x <= 60 and y >= 0 and y <= 30) then
-   State.go Command.Stop init_state else if (x >=65 and x <= 125 and y
-   >= 0 and y <= 30) then State.go Command.Draw init_state else if (x
-   >=130 and x <= 190 and y >= 0 and y <= 30) then State.go
-   Command.EndTurn init_state else init_state *)
+let rec game (st : state) () =
+  let event = wait_next_event [ Button_down; Button_up ] in
+  let position = (event.mouse_x, event.mouse_y) in
+  match position with
+  | x, y ->
+      if x >= 0 && x <= 60 && y >= 0 && y <= 30 then
+        State.go Command.Stop st
+      else if x >= 65 && x <= 125 && y >= 0 && y <= 30 then
+        State.go Command.Draw st
+      else if x >= 130 && x <= 190 && y >= 0 && y <= 30 then
+        State.go Command.EndTurn st
+      else Legal st
 
 let main () =
   init_window 2;

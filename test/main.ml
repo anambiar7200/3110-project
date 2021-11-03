@@ -234,7 +234,7 @@ let next_pl = State.current_next_player init_st
 
 let test_state =
   State.create_state init_deck current_table_lst next_pl
-    current_player_hand [ 0; 0 ]
+    current_player_hand [ 0; 0 ] 1
 
 (*command to play a valid run*)
 let pl_command1 =
@@ -487,7 +487,7 @@ let go_draw_test
     (st : State.state) : test =
   name >:: fun _ ->
   assert_equal
-    (go cmd st |> match_result |> State.current_player_hand
+    (go cmd st |> match_result |> State.current_next_player
    |> List.length)
     ((State.current_player_hand st |> List.length) + 1)
     ~printer:string_of_int

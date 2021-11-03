@@ -36,6 +36,10 @@ val current_table_lst : state -> Table.set list list
 val current_next_player : state -> Player.player
 (**[current_next_player] is the current next player's hand*)
 
+val first_pl : state -> int list
+
+val current_count : state -> int
+
 (** The type representing the result of an attempted movement. *)
 type result =
   | Legal of state
