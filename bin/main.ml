@@ -80,8 +80,45 @@ and ask_for_command state =
       print_endline malformed_command_message;
       ask_for_command state
 
+let color_select_card (cd : card) (x : int) (y : int) =
+  moveto x y;
+  draw_rect x y 30 30;
+  set_color Graphics.yellow;
+  fill_rect x y 30 30;
+  moveto (x + 13) (y + 10);
+  set_color (card_color cd);
+  draw_string (string_of_int (get_number cd));
+  set_color Graphics.black;
+  if get_color cd = Joker then draw_circle (x + 15) (y + 15) 10
+
+(** get current player with State.current_player_hand (st : state) given
+    mouse position out card index in player hand. Current player cards
+    are displayed at the bottom of screen. The first card left bottom
+    corner is at (150, y)*)
+let get_clicked_playercard
+    (current_st : State.state)
+    ((x, y) : int * int) =
+  let player_cards = State.current_player_hand current_st in
+  let float_ind = (float_of_int x -. 150.) /. 30. in
+  let ind = Float.to_int (Float.floor float_ind) in
+  let clicked_playercard = List.nth player_cards ind in
+  clicked_playercard
+
+let rec loop state =
+  let e = wait_next_event [ Button_down ] in
+  if e.button then
+    let clicked_card =
+      get_clicked_playercard state (e.mouse_x, e.mouse_y)
+    in
+    clicked_card
+  else loop state
+
+(* if e.key <> 'q' then loop state else () *)
+
 let play_game () =
+  init_window 2;
   print_endline "let's play a game >:)";
+  loop init_state;
   init_state |> ask_for_command
 
 (* let rec game () = let event = wait_next_event [Button_down;Button_up]
@@ -93,7 +130,6 @@ let play_game () =
    Command.EndTurn init_state else init_state *)
 
 let main () =
-  init_window 2;
   ANSITerminal.print_string [ ANSITerminal.red ]
     "\n\n\
      Welcome to MS1 for the Rummikub Game Engine (CS 3110 Final \

@@ -4,6 +4,8 @@ open Table
 
 type graph
 
+val card_color : card -> color
+
 val draw_card : card -> int -> int -> unit
 (**[draw_card] draws a card of user choice with its lower left corner at
    (x, y) of length 30 and width 30*)
