@@ -49,3 +49,7 @@ val prepend : card -> set -> card list
 val append : card -> set -> card list
 
 val edit_helper : string -> card -> set -> set
+
+val get_set : set list list -> int -> int -> set
+
+val edit_table : set -> set list list -> int -> int -> set list

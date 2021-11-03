@@ -106,6 +106,16 @@ let command_phr_translation (str : string list) =
   | [] -> raise Command.Malformed
   | h :: t -> (h, t)
 
+let edit_phr_translation (str : string list) =
+  match str with
+  | [] -> raise Malformed
+  | [ p; r; c; crd ] ->
+      ( p,
+        int_of_string r,
+        int_of_string c,
+        List.nth card_deck2 (int_of_string crd) )
+  | something_else -> raise Malformed
+
 (**[match_color] is the color type of the card. The function matches a
    string representing a color to a [color_type] in modele card*)
 let match_color (str : string) =
@@ -182,6 +192,13 @@ let switch_state (st : state) =
     play_count = succ st.play_count;
   }
 
+let edit_state
+    (st : state)
+    ((pp, row, col, crd) : string * int * int * card) =
+  let tbl = current_table_lst st in
+  let set = edit_helper pp crd (Add.get_set tbl row col) in
+  let new_tbl = edit_table set tbl row col
+
 (*If the player decides to play, call play_state. If the player decides
   to draw, call draw_state*)
 let go (c : command) (st : state) =
@@ -189,6 +206,8 @@ let go (c : command) (st : state) =
     match c with
     | Command.Play str ->
         Legal (play_state st (command_phr_translation str))
+    | Command.Edit str ->
+        Legal (edit_state st (edit_phr_translation str))
     | Command.Draw -> Legal (draw_state st)
     | Command.Stop -> LegalStop
     | Command.EndTurn -> LegalSwitch (switch_state st)
