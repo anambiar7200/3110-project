@@ -6,6 +6,7 @@ open Drawing
 open State
 open Command
 open Graph
+open Graphics
 
 let valid_command_form =
   "Please enter a case sensitive valid command with the first word \
@@ -19,6 +20,9 @@ let malformed_command_message = "This is a malformed command. "
 let illegal_move_message = "This move is illegal. "
 
 let farewell_message = "Thank you for playing this game. Bye!"
+
+let endturn_message =
+  "The other player has ended their turn. " ^ valid_command_form
 
 let get_color_str color_in =
   match color_in with
@@ -59,7 +63,9 @@ let rec match_command state command =
   let result = go command state in
   match result with
   | Legal new_state -> ask_for_command new_state
-  | LegalSwitch st -> ask_for_command st
+  | LegalSwitch st ->
+      print_endline endturn_message;
+      ask_for_command st
   | Illegal ->
       print_endline illegal_move_message;
       ask_for_command state
@@ -83,15 +89,21 @@ let play_game () =
   print_endline "let's play a game >:)";
   init_state |> ask_for_command
 
-(* let rec game () = let event = wait_next_event [Button_down;Button_up]
-   in let position = (event.mouse_x, event.mouse_y) in match position
-   with |(x, y) -> if (x >= 0 and x <= 60 and y >= 0 and y <= 30) then
-   State.go Command.Stop init_state else if (x >=65 and x <= 125 and y
-   >= 0 and y <= 30) then State.go Command.Draw init_state else if (x
-   >=130 and x <= 190 and y >= 0 and y <= 30) then State.go
-   Command.EndTurn init_state else init_state *)
+let rec game (st : state) () =
+  let event = wait_next_event [ Button_down; Button_up ] in
+  let position = (event.mouse_x, event.mouse_y) in
+  match position with
+  | x, y ->
+      if x >= 0 && x <= 60 && y >= 0 && y <= 30 then
+        State.go Command.Stop st
+      else if x >= 65 && x <= 125 && y >= 0 && y <= 30 then
+        State.go Command.Draw st
+      else if x >= 130 && x <= 190 && y >= 0 && y <= 30 then
+        State.go Command.EndTurn st
+      else Legal st
 
 let main () =
+  init_window 2;
   ANSITerminal.print_string [ ANSITerminal.red ]
     "\n\n\
      Welcome to MS1 for the Rummikub Game Engine (CS 3110 Final \

@@ -10,7 +10,13 @@ type state
 (** The abstract type of values representing the game state. *)
 
 val create_state :
-  card list -> set list list -> player -> player -> state
+  card list ->
+  set list list ->
+  player ->
+  player ->
+  int list ->
+  int ->
+  state
 
 val init_state : state
 (**[init_state] is the initial state after the games starts. 14 cards
@@ -29,6 +35,10 @@ val current_table_lst : state -> Table.set list list
 
 val current_next_player : state -> Player.player
 (**[current_next_player] is the current next player's hand*)
+
+val first_pl : state -> int list
+
+val current_count : state -> int
 
 (** The type representing the result of an attempted movement. *)
 type result =
