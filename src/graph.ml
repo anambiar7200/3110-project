@@ -56,6 +56,12 @@ let rec draw_next_player (pl : player) (x : int) (y : int) =
       draw_hide_card h x y;
       draw_next_player t x (y - 30)
 
+let draw_error_message (m : string) =
+  moveto 20 580;
+  set_color red;
+  draw_string m;
+  set_color black
+
 let init_window (num_of_pl : int) =
   open_graph " 1200x600";
 

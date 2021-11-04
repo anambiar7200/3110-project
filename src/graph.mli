@@ -1,12 +1,19 @@
 open Graphics
 open Card
 open Table
+open Player
 
 type graph
+
+val draw_current_player : player -> int -> int -> unit
+
+val draw_next_player : player -> int -> int -> unit
 
 val draw_card : card -> int -> int -> unit
 (**[draw_card] draws a card of user choice with its lower left corner at
    (x, y) of length 30 and width 30*)
+
+val draw_error_message : string -> unit
 
 val init_window : int -> unit
 (**[init_window] is the initial window when the game first starts.
