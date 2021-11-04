@@ -1,6 +1,7 @@
 open Card
 open Table
 open Player
+open Command
 
 exception NoMoreSpace
 
@@ -90,3 +91,31 @@ let draw_index (tup : (int * int) * set list list) =
 let new_table (tup : (int * int) * set list list) =
   match tup with
   | (r, c), lst -> lst
+
+(**[prepend] prepends a card to a set*)
+let rec prepend (cd : card) (s : set) =
+  match get_cards s with
+  | [] -> []
+  | h :: t -> [ cd; h ] @ t
+
+(**[append] appends a card to the set*)
+let rec append (cd : card) (s : set) =
+  match List.rev (get_cards s) with
+  | [] -> []
+  | h :: t -> List.rev ([ cd; h ] @ t)
+
+let edit_helper (str : string) (cd : card) (s : set) =
+  if str = "pre" then create_set (get_kind s) (prepend cd s)
+  else if str = "post" then create_set (get_kind s) (append cd s)
+  else raise Malformed
+
+(**[insert_to_row] replaces a set list in a table at a specific location*)
+let insert_to_row (s_lst : set list) (tb : set list list) (row : int) =
+  List.mapi (fun i e -> if i = row then s_lst else e) tb
+
+(**[insert_to_col] replaces a set in a set list at a specific index*)
+let insert_to_col (s : set) (s_lst : set list) (col : int) =
+  List.mapi (fun i e -> if i = col then s else e) s_lst
+
+let rec replace (tb : set list list) (row : int) (col : int) (s : set) =
+  insert_to_row (insert_to_col s (List.nth tb row) col) tb row
