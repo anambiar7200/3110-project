@@ -52,6 +52,8 @@ type result =
   | Illegal
   | LegalStop
   | LegalSwitch of state
+  | IllegalLimit
+  | IllegalFirstPlay
 
 val go : Command.command -> state -> result
 (**[go c st] is a result of a player command. The player may choose to
