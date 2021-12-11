@@ -26,6 +26,7 @@ type command_phrase = string list
 
 type command =
   | Play of command_phrase
+  | Edit of command_phrase
   | Draw
   | Stop
   | EndTurn

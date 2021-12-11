@@ -37,8 +37,11 @@ val current_next_player : state -> Player.player
 (**[current_next_player] is the current next player's hand*)
 
 val first_pl : state -> int list
+(**[first_pl] is the current counter of how many turns each player has
+   played*)
 
 val current_count : state -> int
+(**[current_count] is the total number of turns both players have played*)
 
 (** The type representing the result of an attempted movement. *)
 type result =

@@ -4,6 +4,7 @@ type command_phrase = string list
 
 type command =
   | Play of command_phrase
+  | Edit of command_phrase
   | Draw
   | Stop
   | EndTurn
@@ -18,6 +19,7 @@ let parse_input str =
   match no_space_list with
   | [] -> raise Empty
   | "play" :: t -> if t = [] then raise Malformed else Play t
+  | "edit" :: t -> if t = [] then raise Malformed else Edit t
   | "draw" :: t -> if t <> [] then raise Malformed else Draw
   | "stop" :: t -> if t <> [] then raise Malformed else Stop
   | "endturn" :: t -> if t <> [] then raise Malformed else EndTurn

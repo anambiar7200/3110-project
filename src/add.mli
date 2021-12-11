@@ -43,3 +43,11 @@ val draw_index : (int * int) * set list list -> int * int
 val new_table : (int * int) * set list list -> set list list
 (**[new_table] retuns the new table/set list list after adding a new set
    to the table*)
+
+val edit_helper : string -> card -> set -> set
+(**[edit_helper] either prepends or appends a card to a set based on
+   user choice to a set, and it reaturns a new set*)
+
+val replace : set list list -> int -> int -> set -> set list list
+(**[replace] replaces a set in the table at a specific location, returns
+   the new table*)
