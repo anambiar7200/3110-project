@@ -78,10 +78,8 @@ let init_window (num_of_pl : int) =
   moveto 1000 20;
   draw_string
     ("Remaining Deck Size: " ^ string_of_int (106 - (14 * num_of_pl)));
-  draw_current_player
-    (State.current_player_hand State.init_state)
-    150 50;
-  draw_next_player (State.current_next_player State.init_state) 50 540
+  draw_current_player (current_player_hand init_state) 150 50;
+  draw_next_player (current_next_player init_state) 50 540
 
 let rec draw_set
     ((x, y) : int * int)
