@@ -9,6 +9,8 @@ open Graph
 open Graphics
 open Add
 
+let continue_next_round = ref true
+
 let valid_command_form =
   "Please enter a case sensitive valid command with the first word \
    being draw, stop or play followed by run or group and list of \
@@ -153,6 +155,25 @@ let clear_graph state new_set =
   draw_next_player (current_next_player init_state) 15 550;
   display_turn state
 
+let winner_message (winner_str : string) = "Congrats!" ^ winner_str
+
+(** should return null command, command does not change *)
+let continue_game (st : state) =
+  let pl = current_player_hand st in
+  let deck = current_deck_lst st in
+  if pl = [] then false
+  else if deck = [] then (
+    continue_next_round := false;
+    true)
+  else true
+
+let decide_winner (st : state) =
+  let current_len = player_size (current_player_hand st) in
+  let next_len = player_size (current_next_player st) in
+  if current_len < next_len then "The winner is the current player"
+  else if current_len > next_len then "The winner is the next player"
+  else "It is a tie. Both of you win!"
+
 let rec match_command state command_string command =
   let result = go command state in
   match result with
@@ -213,18 +234,21 @@ let rec match_command state command_string command =
       ask_for_command state
 
 and ask_for_command state =
-  print_list (current_player_hand state);
-  print_endline valid_command_form;
-  let command_string = read_line () in
-  try
-    parse_input command_string |> match_command state command_string
-  with
-  | Empty ->
-      print_endline empty_command_message;
-      ask_for_command state
-  | Malformed ->
-      print_endline malformed_command_message;
-      ask_for_command state
+  let should_go = !continue_next_round in
+  if should_go && continue_game state then (
+    print_list (current_player_hand state);
+    print_endline valid_command_form;
+    let command_string = read_line () in
+    try
+      parse_input command_string |> match_command state command_string
+    with
+    | Empty ->
+        print_endline empty_command_message;
+        ask_for_command state
+    | Malformed ->
+        print_endline malformed_command_message;
+        ask_for_command state)
+  else match_command state "stop" Stop
 
 let play_game () =
   init_window 2;
