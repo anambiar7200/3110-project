@@ -23,6 +23,9 @@ val init_state : state
    should be dealt to each player. The table should be empty, and the
    deck should be [card_deck] minus the cards dealt to the players*)
 
+val play_state : state -> string * string list -> state
+(** change*)
+
 val current_deck_lst : state -> Card.card list
 (**[current_deck_lst] is the current card list in the deck. type : card
    list*)
@@ -49,6 +52,8 @@ type result =
   | Illegal
   | LegalStop
   | LegalSwitch of state
+  | IllegalLimit
+  | IllegalFirstPlay
 
 val go : Command.command -> state -> result
 (**[go c st] is a result of a player command. The player may choose to

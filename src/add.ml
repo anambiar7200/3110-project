@@ -34,6 +34,27 @@ let room_in_table (tb : set list list) = col_limit - List.length tb
 (**empty space between 2 seperating different sets in a row*)
 let empty_set : set = create_set Run []
 
+(**[which_row] returns the index of the row of the new set, index starts
+   with 1*)
+let rec which_row (tb : set list list) =
+  match tb with
+  | [] -> 1
+  | h :: t -> 1 + which_row t
+
+(**[which_ind] returns the index of the row and the row index of the new
+   set
+
+   - (index of row * row index)
+   - if the new set cannot fit in the table, raise [NoMoreSpace]*)
+let rec which_ind (st : set) (tb : set list list) (ind : int) =
+  match tb with
+  | [] -> raise NoMoreSpace
+  | h :: t ->
+      if room_in_row h >= set_size st then
+        if List.length tb = 1 then (ind, sum_of_sets h + 3)
+        else (ind, sum_of_sets h + 2)
+      else which_ind st t (ind + 1)
+
 (**[add_to_table] attempts to add a new set to one of the rows in the
    table
 
@@ -58,27 +79,6 @@ let rec add_to_row (st : set) (tb : set list list) =
   | h :: t ->
       if room_in_row h >= set_size st then (h @ [ empty_set; st ]) :: t
       else add_to_row st t
-
-(**[which_row] returns the index of the row of the new set, index starts
-   with 1*)
-let rec which_row (tb : set list list) =
-  match tb with
-  | [] -> 1
-  | h :: t -> 1 + which_row t
-
-(**[which_ind] returns the index of the row and the row index of the new
-   set
-
-   - (index of row * row index)
-   - if the new set cannot fit in the table, raise [NoMoreSpace]*)
-let rec which_ind (st : set) (tb : set list list) (ind : int) =
-  match tb with
-  | [] -> raise NoMoreSpace
-  | h :: t ->
-      if room_in_row h >= set_size st then
-        if List.length tb = 1 then (ind, sum_of_sets h + 3)
-        else (ind, sum_of_sets h + 2)
-      else which_ind st t (ind + 1)
 
 let add_set (st : set) (tb : set list list) =
   if room_in_table tb > 0 then ((which_row tb, 1), add_to_table st tb)

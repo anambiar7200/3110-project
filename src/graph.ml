@@ -39,49 +39,101 @@ let draw_hide_card (cd : card) (x : int) (y : int) =
   draw_rect x y 30 30;
   set_color Graphics.black
 
+(** - First row: f initially, i = 0, size = 30, then the function
+      returns the first 30 cards in the player's hand
+    - Second row: Else if initially, i = 30 and size>30, then the
+      function returns all the cards after index 30 in player's hand
+    - First column: f initially, i = 0, size = 15, then the function
+      returns the first 15 cards in the player's hand
+    - Second column: Else if initially, i = 15 and size>15, then the
+      function returns all the cards after index 15 in player's hand
+    - same rule apply*)
+let rec seperate_player
+    (pl : player)
+    (i : int)
+    (size : int)
+    (acc : card list) =
+  if i < size then
+    let new_acc = acc @ [ List.nth pl i ] in
+    seperate_player pl (i + 1) size new_acc
+  else acc
+
+(**check if the current player hand is overflowing the screen
+   horizontally*)
+let check_current_hand_overflow (pl : player) =
+  let size = player_size pl in
+  if size > 30 then true else false
+
+let check_next_hand_overflow (pl : player) =
+  let size = player_size pl in
+  if size > 15 then true else false
+
 (**[draw_current_player] draws the current player hand at a coordinate*)
 let rec draw_current_player (pl : player) (x : int) (y : int) =
-  match pl with
-  | [] -> moveto 0 0
-  | h :: t ->
-      draw_card h x y;
-      draw_current_player t (x + 30) y
+  let over_flow = check_current_hand_overflow pl in
+  if over_flow then (
+    let first, rest =
+      ( seperate_player pl 0 30 [],
+        seperate_player pl 30 (player_size pl) [] )
+    in
+    draw_current_player first x y;
+    draw_current_player rest x (y - 30))
+  else
+    match pl with
+    | [] -> moveto 0 0
+    | h :: t ->
+        draw_card h x y;
+        draw_current_player t (x + 30) y
 
 (**[draw_next_player] draws the next player hand, hiding their number
    and color*)
 let rec draw_next_player (pl : player) (x : int) (y : int) =
-  match pl with
-  | [] -> moveto 0 0
-  | h :: t ->
-      draw_hide_card h x y;
-      draw_next_player t x (y - 30)
+  let over_flow = check_next_hand_overflow pl in
+  if over_flow then (
+    let first, rest =
+      ( seperate_player pl 0 15 [],
+        seperate_player pl 15 (player_size pl) [] )
+    in
+    draw_next_player first x y;
+    draw_next_player rest (x + 30) y)
+  else
+    match pl with
+    | [] -> moveto 0 0
+    | h :: t ->
+        draw_hide_card h x y;
+        draw_next_player t x (y - 30)
+
+let draw_error_message (m : string) =
+  moveto 20 580;
+  set_color red;
+  draw_string m;
+  set_color black
 
 let init_window (num_of_pl : int) =
   open_graph " 1200x600";
 
   set_window_title "Rummikub: CS 3110 Final Project";
-  draw_rect 0 0 60 30;
-  moveto 13 10;
+  draw_rect 0 0 35 30;
+  moveto 5 10;
   set_color (rgb 153 0 0);
   draw_string "STOP";
   set_color Graphics.black;
-  draw_rect 65 0 60 30;
-  moveto 78 10;
+  draw_rect 40 0 35 30;
+  moveto 45 10;
   set_color (rgb 51 0 102);
   draw_string "DRAW";
   set_color Graphics.black;
-  draw_rect 130 0 60 30;
-  moveto 143 10;
+  draw_rect 80 0 55 30;
+  moveto 85 10;
   set_color (rgb 102 102 0);
   draw_string "ENDTURN";
   set_color Graphics.black;
-  moveto 1000 20;
-  draw_string
-    ("Remaining Deck Size: " ^ string_of_int (106 - (14 * num_of_pl)));
-  draw_current_player
-    (State.current_player_hand State.init_state)
-    150 50;
-  draw_next_player (State.current_next_player State.init_state) 50 540
+  moveto 1055 20;
+  draw_string ("Deck Size: " ^ string_of_int (106 - (14 * num_of_pl)));
+  draw_current_player (current_player_hand init_state) 135 65;
+  draw_next_player (current_next_player init_state) 15 550;
+  moveto 500 5;
+  draw_string "Player 1's turn"
 
 let rec draw_set
     ((x, y) : int * int)
