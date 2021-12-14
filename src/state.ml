@@ -7,6 +7,10 @@ open Add
 
 exception Spaceholder
 
+exception ExceedLimit
+
+exception Firstplay
+
 type state = {
   current_deck : card list;
   current_table : set list list;
@@ -72,6 +76,8 @@ type result =
   | Illegal
   | LegalStop
   | LegalSwitch of state
+  | IllegalLimit
+  | IllegalFirstPlay
 
 let first_play st =
   let player = st.play_count mod 2 in
@@ -83,15 +89,18 @@ let first_play st =
    [current_player] will have [st.current_player] with the card drawn
    added to it.*)
 let draw_state (st : state) =
-  let card_drawn, remain_deck = draw st.current_deck in
-  {
-    current_deck = remain_deck;
-    current_table = st.current_table;
-    current_player = st.next_player;
-    next_player = Player.add_to_player st.current_player card_drawn;
-    first_plays = st.first_plays;
-    play_count = succ st.play_count;
-  }
+  let size = player_size st.current_player in
+  if size <= 59 then
+    let card_drawn, remain_deck = draw st.current_deck in
+    {
+      current_deck = remain_deck;
+      current_table = st.current_table;
+      current_player = st.next_player;
+      next_player = add_to_player st.current_player card_drawn;
+      first_plays = st.first_plays;
+      play_count = succ st.play_count;
+    }
+  else raise ExceedLimit
 
 (**[play_mul_card] is the player hand after playing multiple cards.
    These cards from an input card list will not present in the new
@@ -168,11 +177,12 @@ let match_set_type (str : string) =
    have [st.current_player] with the cards played removed from it.*)
 let play_state (st : state) ((str1, str2) : string * string list) =
   let set = create_set (match_set_type str1) (match_phrase str2) in
-  let valid_set = Table.valid_set set in
-  if
+  let valid_set = valid_set set in
+  if not valid_set then raise InvalidCombo
+  else if
     (not (first_play st))
     && (card_sum (get_cards set) < 20 || not valid_set)
-  then raise InvalidCombo
+  then raise Firstplay
   else if valid_set then
     let card_lst = match_phrase str2 in
     {
@@ -218,10 +228,11 @@ let edit_state
   else
     let s = edit_helper str cd (List.nth (List.nth cur_tb r) (c * 2)) in
     let valid_set = valid_set s in
-    if
+    if not valid_set then raise InvalidCombo
+    else if
       (not (first_play st))
       && (card_sum (get_cards s) < 20 || not valid_set)
-    then raise InvalidCombo
+    then raise Firstplay
     else if valid_set then
       let new_tb = replace cur_tb r (c * 2) s in
       {
@@ -249,6 +260,8 @@ let go (c : command) (st : state) =
   | InvalidCombo -> Illegal
   | NoSuchCard -> Illegal
   | OutOfCards -> Illegal
+  | ExceedLimit -> IllegalLimit
+  | Firstplay -> IllegalFirstPlay
   (* | Drawing.OutOfCards -> Illegal *)
   (* | Player.OutOfCards -> Illegal *)
   | NotYourCard -> Illegal
